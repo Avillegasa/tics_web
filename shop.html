@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tienda - TICS Store</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Explora nuestra amplia colección de productos tecnológicos. Encuentra smartphones, laptops, auriculares y más.">
+    <meta name="keywords" content="tienda tecnología, comprar online, smartphones, laptops, auriculares">
+    
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": "Tienda - TICS Store",
+        "description": "Catálogo completo de productos tecnológicos"
+    }
+    </script>
+    
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛒</text></svg>">
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation (same as index.html) -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="index.html">
+                    <span class="logo-icon">🛒</span>
+                    <span class="logo-text">TICS Store</span>
+                </a>
+            </div>
+            
+            <div class="nav-search">
+                <div class="search-container">
+                    <input type="text" id="search-input" placeholder="Buscar productos..." autocomplete="off">
+                    <button class="search-btn" id="search-btn">🔍</button>
+                    <div class="search-suggestions" id="search-suggestions"></div>
+                </div>
+            </div>
+            
+            <ul class="nav-menu" id="nav-menu">
+                <li class="nav-item"><a href="index.html" class="nav-link">Inicio</a></li>
+                <li class="nav-item"><a href="shop.html" class="nav-link active">Tienda</a></li>
+                <li class="nav-item"><a href="about.html" class="nav-link">Sobre Nosotros</a></li>
+                <li class="nav-item"><a href="contact.html" class="nav-link">Contacto</a></li>
+                <li class="nav-item">
+                    <a href="cart.html" class="nav-link cart-link">
+                        🛒 <span class="cart-count" id="cart-count">0</span>
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="nav-toggle" id="nav-toggle">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Shop Page Content -->
+    <main class="shop-page">
+        <div class="container">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1 class="page-title">Nuestra Tienda</h1>
+                <p class="page-subtitle">Descubre nuestra amplia selección de productos tecnológicos</p>
+            </div>
+
+            <!-- Shop Controls -->
+            <div class="shop-controls">
+                <div class="shop-controls-left">
+                    <button class="filter-toggle" id="filter-toggle">
+                        <span>Filtros</span>
+                        <span class="filter-icon">⚙️</span>
+                    </button>
+                    <div class="results-info">
+                        <span id="results-count">Mostrando 8 productos</span>
+                    </div>
+                </div>
+                
+                <div class="shop-controls-right">
+                    <div class="sort-container">
+                        <label for="sort-select">Ordenar por:</label>
+                        <select id="sort-select" class="sort-select">
+                            <option value="featured">Destacados</option>
+                            <option value="price-asc">Precio: Menor a Mayor</option>
+                            <option value="price-desc">Precio: Mayor a Menor</option>
+                            <option value="rating">Mejor Valorados</option>
+                            <option value="newest">Más Recientes</option>
+                        </select>
+                    </div>
+                    
+                    <div class="view-toggle">
+                        <button class="view-btn active" data-view="grid" title="Vista de cuadrícula">⊞</button>
+                        <button class="view-btn" data-view="list" title="Vista de lista">☰</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="shop-layout">
+                <!-- Sidebar Filters -->
+                <aside class="shop-sidebar" id="shop-sidebar">
+                    <div class="sidebar-section">
+                        <h3 class="sidebar-title">Categorías</h3>
+                        <div class="filter-group" id="category-filters">
+                            <label class="filter-checkbox">
+                                <input type="checkbox" value="all" checked>
+                                <span class="checkmark"></span>
+                                Todas las categorías
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="sidebar-section">
+                        <h3 class="sidebar-title">Rango de Precio</h3>
+                        <div class="price-range">
+                            <div class="price-inputs">
+                                <input type="number" id="price-min" placeholder="Mín" min="0">
+                                <span class="price-separator">-</span>
+                                <input type="number" id="price-max" placeholder="Máx" min="0">
+                            </div>
+                            <button class="btn btn-secondary btn-sm" id="apply-price">Aplicar</button>
+                        </div>
+                    </div>
+                    
+                    <div class="sidebar-section">
+                        <h3 class="sidebar-title">Disponibilidad</h3>
+                        <div class="filter-group">
+                            <label class="filter-checkbox">
+                                <input type="checkbox" value="in-stock" checked>
+                                <span class="checkmark"></span>
+                                En stock
+                            </label>
+                            <label class="filter-checkbox">
+                                <input type="checkbox" value="sale">
+                                <span class="checkmark"></span>
+                                En oferta
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="sidebar-section">
+                        <h3 class="sidebar-title">Valoración</h3>
+                        <div class="filter-group" id="rating-filters">
+                            <label class="filter-checkbox">
+                                <input type="radio" name="rating" value="all" checked>
+                                <span class="checkmark"></span>
+                                Todas las valoraciones
+                            </label>
+                            <label class="filter-checkbox">
+                                <input type="radio" name="rating" value="4+">
+                                <span class="checkmark"></span>
+                                ⭐⭐⭐⭐ y más
+                            </label>
+                            <label class="filter-checkbox">
+                                <input type="radio" name="rating" value="4.5+">
+                                <span class="checkmark"></span>
+                                ⭐⭐⭐⭐⭐ 4.5 y más
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="sidebar-section">
+                        <button class="btn btn-outline btn-full" id="clear-filters">Limpiar Filtros</button>
+                    </div>
+                </aside>
+
+                <!-- Products Grid -->
+                <div class="shop-main">
+                    <div class="products-grid" id="products-grid">
+                        <!-- Products will be loaded here by JavaScript -->
+                    </div>
+                    
+                    <!-- Pagination -->
+                    <div class="pagination" id="pagination">
+                        <!-- Pagination will be generated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer (same as index.html) -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <span class="logo-icon">🛒</span>
+                        <span class="logo-text">TICS Store</span>
+                    </div>
+                    <p class="footer-description">Tu tienda de confianza para productos tecnológicos de última generación.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link">📘</a>
+                        <a href="#" class="social-link">🐦</a>
+                        <a href="#" class="social-link">📷</a>
+                        <a href="#" class="social-link">💼</a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h3 class="footer-title">Productos</h3>
+                    <ul class="footer-links">
+                        <li><a href="shop.html?category=Tecnología">Smartphones</a></li>
+                        <li><a href="shop.html?category=Computadoras">Laptops</a></li>
+                        <li><a href="shop.html?category=Audio">Audio</a></li>
+                        <li><a href="shop.html?category=Wearables">Wearables</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3 class="footer-title">Atención al Cliente</h3>
+                    <ul class="footer-links">
+                        <li><a href="contact.html">Contacto</a></li>
+                        <li><a href="#">Centro de Ayuda</a></li>
+                        <li><a href="#">Devoluciones</a></li>
+                        <li><a href="#">Seguimiento de Pedido</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3 class="footer-title">Información Legal</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Términos y Condiciones</a></li>
+                        <li><a href="#">Política de Privacidad</a></li>
+                        <li><a href="#">Política de Cookies</a></li>
+                        <li><a href="#">Aviso Legal</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 TICS Store. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Loading Spinner -->
+    <div class="loading-spinner" id="loading-spinner">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- JavaScript -->
+    <script src="js/main.js"></script>
+    <script src="js/products.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/search.js"></script>
+    <script src="js/shop.js"></script>
+</body>
+</html>

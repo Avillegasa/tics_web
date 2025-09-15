@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrito de Compras - TICS Store</title>
+    
+    <meta name="description" content="Revisa y gestiona los productos en tu carrito de compras en TICS Store.">
+    <meta name="robots" content="noindex, nofollow">
+    
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛒</text></svg>">
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="index.html">
+                    <span class="logo-icon">🛒</span>
+                    <span class="logo-text">TICS Store</span>
+                </a>
+            </div>
+            
+            <div class="nav-search">
+                <div class="search-container">
+                    <input type="text" id="search-input" placeholder="Buscar productos..." autocomplete="off">
+                    <button class="search-btn" id="search-btn">🔍</button>
+                    <div class="search-suggestions" id="search-suggestions"></div>
+                </div>
+            </div>
+            
+            <ul class="nav-menu" id="nav-menu">
+                <li class="nav-item"><a href="index.html" class="nav-link">Inicio</a></li>
+                <li class="nav-item"><a href="shop.html" class="nav-link">Tienda</a></li>
+                <li class="nav-item"><a href="about.html" class="nav-link">Sobre Nosotros</a></li>
+                <li class="nav-item"><a href="contact.html" class="nav-link">Contacto</a></li>
+                <li class="nav-item">
+                    <a href="cart.html" class="nav-link cart-link active">
+                        🛒 <span class="cart-count" id="cart-count">0</span>
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="nav-toggle" id="nav-toggle">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Cart Page Content -->
+    <main class="cart-page">
+        <div class="container">
+            <div class="page-header">
+                <h1 class="page-title">Carrito de Compras</h1>
+                <p class="page-subtitle">Revisa tus productos antes de proceder al pago</p>
+            </div>
+
+            <div class="cart-layout">
+                <!-- Cart Items -->
+                <div class="cart-items-section">
+                    <div class="cart-items" id="cart-items">
+                        <!-- Cart items will be loaded here -->
+                    </div>
+                    
+                    <div class="empty-cart" id="empty-cart" style="display: none;">
+                        <div class="empty-cart-icon">🛒</div>
+                        <h2>Tu carrito está vacío</h2>
+                        <p>Agrega algunos productos increíbles a tu carrito</p>
+                        <a href="shop.html" class="btn btn-primary">Continuar Comprando</a>
+                    </div>
+                </div>
+
+                <!-- Cart Summary -->
+                <div class="cart-summary">
+                    <div class="summary-card">
+                        <h3 class="summary-title">Resumen del Pedido</h3>
+                        
+                        <div class="summary-line">
+                            <span>Subtotal (<span id="cart-item-count">0</span> productos)</span>
+                            <span id="cart-subtotal">€0.00</span>
+                        </div>
+                        
+                        <div class="summary-line">
+                            <span>Envío</span>
+                            <span id="shipping-cost">Gratis</span>
+                        </div>
+                        
+                        <div class="summary-line">
+                            <span>IVA (21%)</span>
+                            <span id="cart-tax">€0.00</span>
+                        </div>
+                        
+                        <div class="summary-line total">
+                            <span>Total</span>
+                            <span id="cart-total">€0.00</span>
+                        </div>
+                        
+                        <button class="btn btn-primary btn-full" id="checkout-btn" disabled>
+                            Proceder al Pago
+                        </button>
+                        
+                        <a href="shop.html" class="continue-shopping">
+                            ← Continuar Comprando
+                        </a>
+                    </div>
+                    
+                    <!-- Promo Code -->
+                    <div class="promo-code">
+                        <h4>Código de Descuento</h4>
+                        <div class="promo-input-group">
+                            <input type="text" id="promo-input" placeholder="Ingresa tu código">
+                            <button class="btn btn-secondary" id="apply-promo">Aplicar</button>
+                        </div>
+                        <div class="promo-message" id="promo-message"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <span class="logo-icon">🛒</span>
+                        <span class="logo-text">TICS Store</span>
+                    </div>
+                    <p class="footer-description">Tu tienda de confianza para productos tecnológicos de última generación.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3 class="footer-title">Atención al Cliente</h3>
+                    <ul class="footer-links">
+                        <li><a href="contact.html">Contacto</a></li>
+                        <li><a href="#">Centro de Ayuda</a></li>
+                        <li><a href="#">Devoluciones</a></li>
+                        <li><a href="#">Seguimiento de Pedido</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 TICS Store. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Loading Spinner -->
+    <div class="loading-spinner" id="loading-spinner">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- JavaScript -->
+    <script src="js/main.js"></script>
+    <script src="js/products.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/search.js"></script>
+    <script src="js/cart-page.js"></script>
+</body>
+</html>

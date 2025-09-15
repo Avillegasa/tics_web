@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="product-title">Producto - TICS Store</title>
+    
+    <!-- SEO Meta Tags - will be dynamically updated -->
+    <meta name="description" id="product-description" content="Detalle del producto en TICS Store">
+    <meta name="keywords" id="product-keywords" content="producto, tecnología, TICS Store">
+    
+    <!-- JSON-LD Structured Data - will be dynamically updated -->
+    <script type="application/ld+json" id="product-structured-data">
+    {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        "name": "Producto",
+        "description": "Descripción del producto"
+    }
+    </script>
+    
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛒</text></svg>">
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="index.html">
+                    <span class="logo-icon">🛒</span>
+                    <span class="logo-text">TICS Store</span>
+                </a>
+            </div>
+            
+            <div class="nav-search">
+                <div class="search-container">
+                    <input type="text" id="search-input" placeholder="Buscar productos..." autocomplete="off">
+                    <button class="search-btn" id="search-btn">🔍</button>
+                    <div class="search-suggestions" id="search-suggestions"></div>
+                </div>
+            </div>
+            
+            <ul class="nav-menu" id="nav-menu">
+                <li class="nav-item"><a href="index.html" class="nav-link">Inicio</a></li>
+                <li class="nav-item"><a href="shop.html" class="nav-link">Tienda</a></li>
+                <li class="nav-item"><a href="about.html" class="nav-link">Sobre Nosotros</a></li>
+                <li class="nav-item"><a href="contact.html" class="nav-link">Contacto</a></li>
+                <li class="nav-item">
+                    <a href="cart.html" class="nav-link cart-link">
+                        🛒 <span class="cart-count" id="cart-count">0</span>
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="nav-toggle" id="nav-toggle">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+        <div class="container">
+            <nav aria-label="Breadcrumb">
+                <ol class="breadcrumb-list">
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="shop.html">Tienda</a></li>
+                    <li class="current" id="breadcrumb-product">Producto</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Product Page Content -->
+    <main class="product-page">
+        <div class="container">
+            <div class="product-layout" id="product-content">
+                <!-- Product Gallery -->
+                <div class="product-gallery">
+                    <div class="main-image">
+                        <img id="main-product-image" src="" alt="Product Image" loading="lazy">
+                        <div class="image-zoom" id="image-zoom"></div>
+                    </div>
+                    <div class="thumbnail-images" id="thumbnail-images">
+                        <!-- Thumbnails will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Product Info -->
+                <div class="product-info">
+                    <div class="product-header">
+                        <h1 class="product-name" id="product-name">Cargando...</h1>
+                        <div class="product-rating" id="product-rating">
+                            <!-- Rating will be loaded here -->
+                        </div>
+                    </div>
+
+                    <div class="product-pricing" id="product-pricing">
+                        <!-- Pricing will be loaded here -->
+                    </div>
+
+                    <div class="product-description">
+                        <p id="product-desc">Cargando descripción...</p>
+                    </div>
+
+                    <div class="product-variants" id="product-variants">
+                        <!-- Variants will be loaded here -->
+                    </div>
+
+                    <div class="product-quantity">
+                        <label for="quantity">Cantidad:</label>
+                        <div class="quantity-control">
+                            <button class="qty-btn" id="qty-minus">-</button>
+                            <input type="number" id="quantity" value="1" min="1" max="99">
+                            <button class="qty-btn" id="qty-plus">+</button>
+                        </div>
+                        <span class="stock-info" id="stock-info">En stock</span>
+                    </div>
+
+                    <div class="product-actions">
+                        <button class="btn btn-primary btn-large" id="add-to-cart">
+                            Agregar al Carrito
+                        </button>
+                        <button class="btn btn-secondary btn-large" id="buy-now">
+                            Comprar Ahora
+                        </button>
+                    </div>
+
+                    <div class="product-features">
+                        <div class="feature">
+                            <span class="feature-icon">🚚</span>
+                            <div class="feature-text">
+                                <strong>Envío Gratuito</strong>
+                                <p>En pedidos superiores a €50</p>
+                            </div>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">🔄</span>
+                            <div class="feature-text">
+                                <strong>Devolución Gratuita</strong>
+                                <p>30 días para devoluciones</p>
+                            </div>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">⭐</span>
+                            <div class="feature-text">
+                                <strong>Garantía Extendida</strong>
+                                <p>Hasta 2 años de garantía</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="product-meta" id="product-meta">
+                        <!-- Product metadata will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product Tabs -->
+            <div class="product-tabs">
+                <div class="tab-buttons">
+                    <button class="tab-btn active" data-tab="specifications">Especificaciones</button>
+                    <button class="tab-btn" data-tab="reviews">Reseñas</button>
+                    <button class="tab-btn" data-tab="shipping">Envío</button>
+                </div>
+
+                <div class="tab-content">
+                    <div class="tab-pane active" id="specifications">
+                        <div class="specifications-grid" id="product-specifications">
+                            <!-- Specifications will be loaded here -->
+                        </div>
+                    </div>
+
+                    <div class="tab-pane" id="reviews">
+                        <div class="reviews-section">
+                            <div class="reviews-summary">
+                                <div class="rating-overview">
+                                    <div class="average-rating" id="average-rating">
+                                        <span class="rating-number">4.8</span>
+                                        <div class="stars">⭐⭐⭐⭐⭐</div>
+                                        <p>Basado en 124 reseñas</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="reviews-list">
+                                <div class="review">
+                                    <div class="review-header">
+                                        <div class="reviewer-name">María González</div>
+                                        <div class="review-rating">⭐⭐⭐⭐⭐</div>
+                                        <div class="review-date">15 marzo 2024</div>
+                                    </div>
+                                    <div class="review-content">
+                                        <p>Excelente producto, superó mis expectativas. La calidad es excepcional y el servicio de entrega fue muy rápido.</p>
+                                    </div>
+                                </div>
+
+                                <div class="review">
+                                    <div class="review-header">
+                                        <div class="reviewer-name">Carlos Rodríguez</div>
+                                        <div class="review-rating">⭐⭐⭐⭐</div>
+                                        <div class="review-date">12 marzo 2024</div>
+                                    </div>
+                                    <div class="review-content">
+                                        <p>Muy buen producto, justo lo que esperaba. El empaque llegó en perfectas condiciones.</p>
+                                    </div>
+                                </div>
+
+                                <div class="review">
+                                    <div class="review-header">
+                                        <div class="reviewer-name">Ana Martínez</div>
+                                        <div class="review-rating">⭐⭐⭐⭐⭐</div>
+                                        <div class="review-date">8 marzo 2024</div>
+                                    </div>
+                                    <div class="review-content">
+                                        <p>Increíble calidad-precio. Lo recomiendo totalmente, el proceso de compra fue muy sencillo.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane" id="shipping">
+                        <div class="shipping-info">
+                            <h3>Información de Envío</h3>
+                            <div class="shipping-options">
+                                <div class="shipping-option">
+                                    <strong>Envío Estándar (Gratuito)</strong>
+                                    <p>3-5 días laborables • Gratis en pedidos +€50</p>
+                                </div>
+                                <div class="shipping-option">
+                                    <strong>Envío Express</strong>
+                                    <p>1-2 días laborables • €9.99</p>
+                                </div>
+                                <div class="shipping-option">
+                                    <strong>Entrega el Mismo Día</strong>
+                                    <p>Pedidos antes de las 14:00 • €19.99 (Solo ciudades principales)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Related Products -->
+            <section class="related-products">
+                <h2 class="section-title">Productos Relacionados</h2>
+                <div class="products-grid" id="related-products">
+                    <!-- Related products will be loaded here -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <span class="logo-icon">🛒</span>
+                        <span class="logo-text">TICS Store</span>
+                    </div>
+                    <p class="footer-description">Tu tienda de confianza para productos tecnológicos de última generación.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3 class="footer-title">Productos</h3>
+                    <ul class="footer-links">
+                        <li><a href="shop.html?category=Tecnología">Smartphones</a></li>
+                        <li><a href="shop.html?category=Computadoras">Laptops</a></li>
+                        <li><a href="shop.html?category=Audio">Audio</a></li>
+                        <li><a href="shop.html?category=Wearables">Wearables</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3 class="footer-title">Atención al Cliente</h3>
+                    <ul class="footer-links">
+                        <li><a href="contact.html">Contacto</a></li>
+                        <li><a href="#">Centro de Ayuda</a></li>
+                        <li><a href="#">Devoluciones</a></li>
+                        <li><a href="#">Seguimiento de Pedido</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 TICS Store. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Loading Spinner -->
+    <div class="loading-spinner" id="loading-spinner">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- JavaScript -->
+    <script src="js/main.js"></script>
+    <script src="js/products.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/search.js"></script>
+    <script src="js/product.js"></script>
+</body>
+</html>

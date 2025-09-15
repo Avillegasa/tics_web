@@ -1,0 +1,155 @@
+[
+  {
+    "id": 1,
+    "title": "Smartphone Pro Max 128GB",
+    "description": "El último smartphone con cámara de 48MP, pantalla OLED de 6.7\" y batería de larga duración. Perfecto para fotografía profesional y uso diario.",
+    "price": 899.99,
+    "salePrice": 749.99,
+    "sku": "SPH-PM-128",
+    "stock": 15,
+    "images": [
+      "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500&h=500&fit=crop",
+      "https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=500&h=500&fit=crop",
+      "https://images.unsplash.com/photo-1580910051074-3eb694886505?w=500&h=500&fit=crop"
+    ],
+    "category": "Tecnología",
+    "tags": ["smartphone", "cámara", "5G", "premium"],
+    "rating": 4.8,
+    "attributes": {
+      "color": ["Negro", "Azul", "Plata"],
+      "storage": ["128GB", "256GB", "512GB"]
+    }
+  },
+  {
+    "id": 2,
+    "title": "Auriculares Inalámbricos Premium",
+    "description": "Auriculares con cancelación de ruido activa, sonido Hi-Fi y hasta 30 horas de batería. Ideales para viajes y trabajo.",
+    "price": 249.99,
+    "sku": "AUD-WL-PRM",
+    "stock": 28,
+    "images": [
+      "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500&h=500&fit=crop",
+      "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=500&h=500&fit=crop"
+    ],
+    "category": "Audio",
+    "tags": ["auriculares", "inalámbricos", "cancelación de ruido"],
+    "rating": 4.6,
+    "attributes": {
+      "color": ["Negro", "Blanco", "Gris"]
+    }
+  },
+  {
+    "id": 3,
+    "title": "Laptop Gaming Ultra 16GB RAM",
+    "description": "Potente laptop para gaming con procesador de última generación, tarjeta gráfica dedicada y pantalla 144Hz para la mejor experiencia de juego.",
+    "price": 1299.99,
+    "salePrice": 1099.99,
+    "sku": "LAP-GM-16GB",
+    "stock": 8,
+    "images": [
+      "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=500&h=500&fit=crop",
+      "https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?w=500&h=500&fit=crop"
+    ],
+    "category": "Computadoras",
+    "tags": ["laptop", "gaming", "alta performance"],
+    "rating": 4.9,
+    "attributes": {
+      "ram": ["16GB", "32GB"],
+      "storage": ["512GB SSD", "1TB SSD"]
+    }
+  },
+  {
+    "id": 4,
+    "title": "Reloj Inteligente Deportivo",
+    "description": "Reloj inteligente con GPS, monitor de frecuencia cardíaca, resistencia al agua y más de 100 modos deportivos.",
+    "price": 199.99,
+    "sku": "REL-INT-DEP",
+    "stock": 22,
+    "images": [
+      "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&h=500&fit=crop",
+      "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=500&h=500&fit=crop"
+    ],
+    "category": "Wearables",
+    "tags": ["reloj", "deportivo", "GPS", "salud"],
+    "rating": 4.4,
+    "attributes": {
+      "color": ["Negro", "Azul", "Rosa"],
+      "size": ["42mm", "46mm"]
+    }
+  },
+  {
+    "id": 5,
+    "title": "Cámara Mirrorless 24MP",
+    "description": "Cámara profesional sin espejo con sensor de 24MP, grabación 4K y sistema de estabilización avanzado para fotógrafos profesionales.",
+    "price": 799.99,
+    "sku": "CAM-ML-24MP",
+    "stock": 12,
+    "images": [
+      "https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=500&h=500&fit=crop",
+      "https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?w=500&h=500&fit=crop"
+    ],
+    "category": "Fotografía",
+    "tags": ["cámara", "profesional", "4K", "mirrorless"],
+    "rating": 4.7,
+    "attributes": {
+      "lens": ["18-55mm", "50mm f/1.8", "24-70mm"]
+    }
+  },
+  {
+    "id": 6,
+    "title": "Tablet Pro 11\" 256GB",
+    "description": "Tablet profesional con pantalla Liquid Retina de 11\", chip M1 y soporte para Apple Pencil. Perfect para creativos y profesionales.",
+    "price": 649.99,
+    "salePrice": 579.99,
+    "sku": "TAB-PRO-256",
+    "stock": 18,
+    "images": [
+      "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=500&h=500&fit=crop",
+      "https://images.unsplash.com/photo-1592210454359-9043f067919b?w=500&h=500&fit=crop"
+    ],
+    "category": "Tecnología",
+    "tags": ["tablet", "profesional", "creativos"],
+    "rating": 4.8,
+    "attributes": {
+      "color": ["Gris Espacial", "Plata"],
+      "storage": ["128GB", "256GB", "512GB"]
+    }
+  },
+  {
+    "id": 7,
+    "title": "Altavoz Bluetooth Portátil",
+    "description": "Altavoz inalámbrico con sonido 360°, resistente al agua IPX7 y hasta 24 horas de reproducción. Perfecto para exteriores.",
+    "price": 89.99,
+    "sku": "ALT-BT-PORT",
+    "stock": 35,
+    "images": [
+      "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=500&h=500&fit=crop",
+      "https://images.unsplash.com/photo-1545454675-3531b543be5d?w=500&h=500&fit=crop"
+    ],
+    "category": "Audio",
+    "tags": ["altavoz", "bluetooth", "portable", "resistente agua"],
+    "rating": 4.3,
+    "attributes": {
+      "color": ["Negro", "Azul", "Rojo", "Verde"]
+    }
+  },
+  {
+    "id": 8,
+    "title": "Monitor 4K 27\" Profesional",
+    "description": "Monitor profesional 4K UHD de 27\" con panel IPS, 99% sRGB, conectividad USB-C y soporte ergonómico ajustable.",
+    "price": 449.99,
+    "sku": "MON-4K-27",
+    "stock": 14,
+    "images": [
+      "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=500&h=500&fit=crop",
+      "https://images.unsplash.com/photo-1593642702821-c8da6771f0c6?w=500&h=500&fit=crop"
+    ],
+    "category": "Computadoras",
+    "tags": ["monitor", "4K", "profesional", "USB-C"],
+    "rating": 4.6,
+    "attributes": {
+      "size": ["24\"", "27\"", "32\""],
+      "resolution": ["4K UHD", "2K QHD"]
+    }
+  }
+]

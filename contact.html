@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contacto - TICS Store</title>
+    
+    <meta name="description" content="Ponte en contacto con TICS Store. Estamos aquí para ayudarte con cualquier consulta o duda que tengas.">
+    
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛒</text></svg>">
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="index.html">
+                    <span class="logo-icon">🛒</span>
+                    <span class="logo-text">TICS Store</span>
+                </a>
+            </div>
+            
+            <div class="nav-search">
+                <div class="search-container">
+                    <input type="text" id="search-input" placeholder="Buscar productos..." autocomplete="off">
+                    <button class="search-btn" id="search-btn">🔍</button>
+                    <div class="search-suggestions" id="search-suggestions"></div>
+                </div>
+            </div>
+            
+            <ul class="nav-menu" id="nav-menu">
+                <li class="nav-item"><a href="index.html" class="nav-link">Inicio</a></li>
+                <li class="nav-item"><a href="shop.html" class="nav-link">Tienda</a></li>
+                <li class="nav-item"><a href="about.html" class="nav-link">Sobre Nosotros</a></li>
+                <li class="nav-item"><a href="contact.html" class="nav-link active">Contacto</a></li>
+                <li class="nav-item">
+                    <a href="cart.html" class="nav-link cart-link">
+                        🛒 <span class="cart-count" id="cart-count">0</span>
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="nav-toggle" id="nav-toggle">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contact Page Content -->
+    <main class="contact-page">
+        <div class="container">
+            <div class="page-header">
+                <h1 class="page-title">Contacto</h1>
+                <p class="page-subtitle">¿Tienes alguna pregunta? Estamos aquí para ayudarte</p>
+            </div>
+
+            <div class="contact-layout">
+                <!-- Contact Form -->
+                <div class="contact-form-section">
+                    <form class="contact-form" id="contact-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="contact-name">Nombre Completo *</label>
+                                <input type="text" id="contact-name" name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="contact-email">Email *</label>
+                                <input type="email" id="contact-email" name="email" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="contact-phone">Teléfono</label>
+                                <input type="tel" id="contact-phone" name="phone">
+                            </div>
+                            <div class="form-group">
+                                <label for="contact-subject">Asunto *</label>
+                                <select id="contact-subject" name="subject" required>
+                                    <option value="">Selecciona un asunto</option>
+                                    <option value="general">Consulta General</option>
+                                    <option value="support">Soporte Técnico</option>
+                                    <option value="order">Estado del Pedido</option>
+                                    <option value="return">Devolución</option>
+                                    <option value="partnership">Asociación Comercial</option>
+                                    <option value="other">Otro</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="contact-message">Mensaje *</label>
+                                <textarea id="contact-message" name="message" rows="6" placeholder="Escribe tu mensaje aquí..." required></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="privacy-policy" required>
+                                <span class="checkmark"></span>
+                                He leído y acepto la <a href="#" target="_blank">Política de Privacidad</a> *
+                            </label>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Enviar Mensaje</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Contact Info -->
+                <div class="contact-info-section">
+                    <div class="contact-info">
+                        <h2>Información de Contacto</h2>
+                        <p>Estamos disponibles para resolver todas tus dudas y consultas. No dudes en contactarnos a través de cualquiera de estos medios.</p>
+                        
+                        <div class="contact-methods">
+                            <div class="contact-method">
+                                <div class="method-icon">📍</div>
+                                <div class="method-info">
+                                    <h3>Dirección</h3>
+                                    <p>Calle Gran Vía 123<br>28013 Madrid, España</p>
+                                </div>
+                            </div>
+                            
+                            <div class="contact-method">
+                                <div class="method-icon">📞</div>
+                                <div class="method-info">
+                                    <h3>Teléfono</h3>
+                                    <p>+34 900 123 456</p>
+                                    <small>Lun-Vie 9:00-18:00</small>
+                                </div>
+                            </div>
+                            
+                            <div class="contact-method">
+                                <div class="method-icon">✉️</div>
+                                <div class="method-info">
+                                    <h3>Email</h3>
+                                    <p>hola@ticsstore.com</p>
+                                    <small>Respuesta en 24 horas</small>
+                                </div>
+                            </div>
+                            
+                            <div class="contact-method">
+                                <div class="method-icon">💬</div>
+                                <div class="method-info">
+                                    <h3>Chat en Vivo</h3>
+                                    <p>Disponible en nuestra web</p>
+                                    <small>Lun-Dom 8:00-22:00</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FAQ Section -->
+                    <div class="faq-section">
+                        <h2>Preguntas Frecuentes</h2>
+                        <div class="faq-list">
+                            <div class="faq-item">
+                                <div class="faq-question">
+                                    <h3>¿Cuáles son los tiempos de envío?</h3>
+                                    <span class="faq-toggle">+</span>
+                                </div>
+                                <div class="faq-answer">
+                                    <p>Los envíos estándar tardan entre 3-5 días laborables. Los envíos express llegan en 1-2 días laborables.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="faq-item">
+                                <div class="faq-question">
+                                    <h3>¿Puedo devolver un producto?</h3>
+                                    <span class="faq-toggle">+</span>
+                                </div>
+                                <div class="faq-answer">
+                                    <p>Sí, aceptamos devoluciones dentro de los 30 días posteriores a la compra, siempre que el producto esté en perfecto estado.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="faq-item">
+                                <div class="faq-question">
+                                    <h3>¿Ofrecen garantía en los productos?</h3>
+                                    <span class="faq-toggle">+</span>
+                                </div>
+                                <div class="faq-answer">
+                                    <p>Todos nuestros productos incluyen garantía del fabricante, además ofrecemos garantía extendida de hasta 2 años.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="faq-item">
+                                <div class="faq-question">
+                                    <h3>¿Qué métodos de pago aceptan?</h3>
+                                    <span class="faq-toggle">+</span>
+                                </div>
+                                <div class="faq-answer">
+                                    <p>Aceptamos tarjetas de crédito/débito (Visa, Mastercard), PayPal, transferencia bancaria y pago contra reembolso.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <span class="logo-icon">🛒</span>
+                        <span class="logo-text">TICS Store</span>
+                    </div>
+                    <p class="footer-description">Tu tienda de confianza para productos tecnológicos de última generación.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link">📘</a>
+                        <a href="#" class="social-link">🐦</a>
+                        <a href="#" class="social-link">📷</a>
+                        <a href="#" class="social-link">💼</a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h3 class="footer-title">Productos</h3>
+                    <ul class="footer-links">
+                        <li><a href="shop.html?category=Tecnología">Smartphones</a></li>
+                        <li><a href="shop.html?category=Computadoras">Laptops</a></li>
+                        <li><a href="shop.html?category=Audio">Audio</a></li>
+                        <li><a href="shop.html?category=Wearables">Wearables</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3 class="footer-title">Atención al Cliente</h3>
+                    <ul class="footer-links">
+                        <li><a href="contact.html">Contacto</a></li>
+                        <li><a href="#">Centro de Ayuda</a></li>
+                        <li><a href="#">Devoluciones</a></li>
+                        <li><a href="#">Seguimiento de Pedido</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3 class="footer-title">Información Legal</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Términos y Condiciones</a></li>
+                        <li><a href="#">Política de Privacidad</a></li>
+                        <li><a href="#">Política de Cookies</a></li>
+                        <li><a href="#">Aviso Legal</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 TICS Store. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- JavaScript -->
+    <script src="js/main.js"></script>
+    <script src="js/products.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/search.js"></script>
+    <script src="js/contact.js"></script>
+</body>
+</html>

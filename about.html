@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sobre Nosotros - TICS Store</title>
+    
+    <meta name="description" content="Conoce más sobre TICS Store, tu tienda de confianza para productos tecnológicos de última generación.">
+    
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛒</text></svg>">
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="index.html">
+                    <span class="logo-icon">🛒</span>
+                    <span class="logo-text">TICS Store</span>
+                </a>
+            </div>
+            
+            <div class="nav-search">
+                <div class="search-container">
+                    <input type="text" id="search-input" placeholder="Buscar productos..." autocomplete="off">
+                    <button class="search-btn" id="search-btn">🔍</button>
+                    <div class="search-suggestions" id="search-suggestions"></div>
+                </div>
+            </div>
+            
+            <ul class="nav-menu" id="nav-menu">
+                <li class="nav-item"><a href="index.html" class="nav-link">Inicio</a></li>
+                <li class="nav-item"><a href="shop.html" class="nav-link">Tienda</a></li>
+                <li class="nav-item"><a href="about.html" class="nav-link active">Sobre Nosotros</a></li>
+                <li class="nav-item"><a href="contact.html" class="nav-link">Contacto</a></li>
+                <li class="nav-item">
+                    <a href="cart.html" class="nav-link cart-link">
+                        🛒 <span class="cart-count" id="cart-count">0</span>
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="nav-toggle" id="nav-toggle">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- About Page Content -->
+    <main class="about-page">
+        <!-- Hero Section -->
+        <section class="about-hero">
+            <div class="container">
+                <div class="about-hero-content">
+                    <h1 class="page-title">Sobre TICS Store</h1>
+                    <p class="page-subtitle">Somos una empresa comprometida con llevarte la mejor tecnología</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Content -->
+        <section class="about-content">
+            <div class="container">
+                <div class="content-section">
+                    <div class="text-content">
+                        <h2>Nuestra Historia</h2>
+                        <p>TICS Store nació en 2020 con una misión clara: democratizar el acceso a la tecnología de última generación. Fundada por un equipo de apasionados de la tecnología, nuestra empresa comenzó como una pequeña tienda online que se ha convertido en una de las referencias del sector en España.</p>
+                        <p>Desde nuestros inicios, hemos mantenido nuestro compromiso de ofrecer productos de la más alta calidad, con precios competitivos y un servicio al cliente excepcional.</p>
+                    </div>
+                    <div class="image-content">
+                        <img src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600&h=400&fit=crop" alt="Equipo trabajando" loading="lazy">
+                    </div>
+                </div>
+                
+                <div class="content-section reverse">
+                    <div class="text-content">
+                        <h2>Nuestra Misión</h2>
+                        <p>Creemos que la tecnología debe ser accesible para todos. Por eso trabajamos incansablemente para seleccionar los mejores productos del mercado y ofrecerlos a precios justos, con el respaldo de un servicio postventa incomparable.</p>
+                        <p>Cada producto que vendemos ha pasado por un riguroso proceso de selección, asegurándonos de que cumple con nuestros estándares de calidad y funcionalidad.</p>
+                    </div>
+                    <div class="image-content">
+                        <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&h=400&fit=crop" alt="Tecnología moderna" loading="lazy">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Values Section -->
+        <section class="values-section">
+            <div class="container">
+                <h2 class="section-title">Nuestros Valores</h2>
+                <div class="values-grid">
+                    <div class="value-card">
+                        <div class="value-icon">🎯</div>
+                        <h3>Calidad</h3>
+                        <p>Seleccionamos cuidadosamente cada producto para garantizar la máxima calidad y durabilidad.</p>
+                    </div>
+                    <div class="value-card">
+                        <div class="value-icon">⚡</div>
+                        <h3>Innovación</h3>
+                        <p>Siempre estamos a la vanguardia de las últimas tendencias tecnológicas del mercado.</p>
+                    </div>
+                    <div class="value-card">
+                        <div class="value-icon">🤝</div>
+                        <h3>Confianza</h3>
+                        <p>Construimos relaciones duraderas basadas en la transparencia y la confianza mutua.</p>
+                    </div>
+                    <div class="value-card">
+                        <div class="value-icon">🚀</div>
+                        <h3>Excelencia</h3>
+                        <p>Nos esforzamos por superar las expectativas de nuestros clientes en cada interacción.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Team Section -->
+        <section class="team-section">
+            <div class="container">
+                <h2 class="section-title">Nuestro Equipo</h2>
+                <div class="team-grid">
+                    <div class="team-member">
+                        <div class="member-image">
+                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&h=300&fit=crop" alt="Juan Pérez" loading="lazy">
+                        </div>
+                        <div class="member-info">
+                            <h3>Juan Pérez</h3>
+                            <p class="member-role">CEO & Fundador</p>
+                            <p class="member-description">Ingeniero en Sistemas con más de 15 años de experiencia en el sector tecnológico.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="team-member">
+                        <div class="member-image">
+                            <img src="https://images.unsplash.com/photo-1494790108755-2616c8b6c913?w=300&h=300&fit=crop" alt="María García" loading="lazy">
+                        </div>
+                        <div class="member-info">
+                            <h3>María García</h3>
+                            <p class="member-role">Directora de Marketing</p>
+                            <p class="member-description">Experta en marketing digital con pasión por las nuevas tecnologías y tendencias de mercado.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="team-member">
+                        <div class="member-image">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop" alt="Carlos Rodríguez" loading="lazy">
+                        </div>
+                        <div class="member-info">
+                            <h3>Carlos Rodríguez</h3>
+                            <p class="member-role">Director Técnico</p>
+                            <p class="member-description">Especialista en desarrollo web y experiencia de usuario, enfocado en la innovación digital.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="stats-section">
+            <div class="container">
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-number">50K+</div>
+                        <div class="stat-label">Clientes Satisfechos</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">1000+</div>
+                        <div class="stat-label">Productos Disponibles</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">4.8★</div>
+                        <div class="stat-label">Valoración Promedio</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">24/7</div>
+                        <div class="stat-label">Soporte Técnico</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <span class="logo-icon">🛒</span>
+                        <span class="logo-text">TICS Store</span>
+                    </div>
+                    <p class="footer-description">Tu tienda de confianza para productos tecnológicos de última generación.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link">📘</a>
+                        <a href="#" class="social-link">🐦</a>
+                        <a href="#" class="social-link">📷</a>
+                        <a href="#" class="social-link">💼</a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h3 class="footer-title">Productos</h3>
+                    <ul class="footer-links">
+                        <li><a href="shop.html?category=Tecnología">Smartphones</a></li>
+                        <li><a href="shop.html?category=Computadoras">Laptops</a></li>
+                        <li><a href="shop.html?category=Audio">Audio</a></li>
+                        <li><a href="shop.html?category=Wearables">Wearables</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3 class="footer-title">Atención al Cliente</h3>
+                    <ul class="footer-links">
+                        <li><a href="contact.html">Contacto</a></li>
+                        <li><a href="#">Centro de Ayuda</a></li>
+                        <li><a href="#">Devoluciones</a></li>
+                        <li><a href="#">Seguimiento de Pedido</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3 class="footer-title">Información Legal</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Términos y Condiciones</a></li>
+                        <li><a href="#">Política de Privacidad</a></li>
+                        <li><a href="#">Política de Cookies</a></li>
+                        <li><a href="#">Aviso Legal</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 TICS Store. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="js/main.js"></script>
+    <script src="js/products.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/search.js"></script>
+</body>
+</html>

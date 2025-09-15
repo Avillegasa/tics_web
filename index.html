@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TICS Store - Tu tienda de tecnología online</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="TICS Store - La mejor tienda online de tecnología. Encuentra smartphones, laptops, auriculares y más con los mejores precios.">
+    <meta name="keywords" content="tecnología, smartphones, laptops, auriculares, e-commerce, tienda online">
+    <meta name="author" content="TICS Store">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="TICS Store - Tu tienda de tecnología online">
+    <meta property="og:description" content="Encuentra los mejores productos tecnológicos con envío gratuito y garantía extendida.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ticsstore.com">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200&h=630&fit=crop">
+    
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Store",
+        "name": "TICS Store",
+        "description": "Tienda online especializada en productos tecnológicos",
+        "url": "https://ticsstore.com",
+        "logo": "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=200&h=200&fit=crop",
+        "contactPoint": {
+            "@type": "ContactPoint",
+            "telephone": "+34-900-123-456",
+            "contactType": "customer service"
+        }
+    }
+    </script>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛒</text></svg>">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <!-- Logo -->
+            <div class="nav-logo">
+                <a href="index.html">
+                    <span class="logo-icon">🛒</span>
+                    <span class="logo-text">TICS Store</span>
+                </a>
+            </div>
+            
+            <!-- Search Bar -->
+            <div class="nav-search">
+                <div class="search-container">
+                    <input type="text" id="search-input" placeholder="Buscar productos..." autocomplete="off">
+                    <button class="search-btn" id="search-btn">🔍</button>
+                    <div class="search-suggestions" id="search-suggestions"></div>
+                </div>
+            </div>
+            
+            <!-- Navigation Menu -->
+            <ul class="nav-menu" id="nav-menu">
+                <li class="nav-item"><a href="index.html" class="nav-link active">Inicio</a></li>
+                <li class="nav-item"><a href="shop.html" class="nav-link">Tienda</a></li>
+                <li class="nav-item"><a href="about.html" class="nav-link">Sobre Nosotros</a></li>
+                <li class="nav-item"><a href="contact.html" class="nav-link">Contacto</a></li>
+                <li class="nav-item">
+                    <a href="cart.html" class="nav-link cart-link">
+                        🛒 <span class="cart-count" id="cart-count">0</span>
+                    </a>
+                </li>
+            </ul>
+            
+            <!-- Mobile Menu Toggle -->
+            <div class="nav-toggle" id="nav-toggle">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1 class="hero-title">Descubre la Tecnología del Futuro</h1>
+                <p class="hero-subtitle">Los mejores productos tecnológicos con envío gratuito y garantía extendida</p>
+                <div class="hero-buttons">
+                    <a href="shop.html" class="btn btn-primary">Explorar Tienda</a>
+                    <a href="#featured" class="btn btn-secondary">Ver Destacados</a>
+                </div>
+            </div>
+        </div>
+        <div class="hero-background">
+            <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1920&h=1080&fit=crop" alt="Tecnología moderna" loading="lazy">
+            <div class="hero-overlay"></div>
+        </div>
+    </section>
+
+    <!-- Featured Products Section -->
+    <section class="featured-section" id="featured">
+        <div class="container">
+            <h2 class="section-title">Productos Destacados</h2>
+            <p class="section-subtitle">Descubre nuestra selección de productos más populares</p>
+            
+            <div class="featured-grid" id="featured-products">
+                <!-- Products will be loaded here by JavaScript -->
+            </div>
+            
+            <div class="featured-cta">
+                <a href="shop.html" class="btn btn-outline">Ver Todos los Productos</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section">
+        <div class="container">
+            <h2 class="section-title">¿Por Qué Elegir TICS Store?</h2>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🚚</div>
+                    <h3 class="feature-title">Envío Gratuito</h3>
+                    <p class="feature-description">Envío gratuito en pedidos superiores a €50. Recibe tus productos en 24-48 horas.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3 class="feature-title">Compra Segura</h3>
+                    <p class="feature-description">Tus datos están protegidos con encriptación SSL y métodos de pago seguros.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">⭐</div>
+                    <h3 class="feature-title">Garantía Extendida</h3>
+                    <p class="feature-description">Todos nuestros productos incluyen garantía extendida de hasta 2 años.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">💬</div>
+                    <h3 class="feature-title">Soporte 24/7</h3>
+                    <p class="feature-description">Nuestro equipo de soporte está disponible las 24 horas para ayudarte.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section class="newsletter-section">
+        <div class="container">
+            <div class="newsletter-content">
+                <h2 class="newsletter-title">Mantente al Día</h2>
+                <p class="newsletter-subtitle">Suscríbete a nuestro newsletter y recibe ofertas exclusivas</p>
+                
+                <form class="newsletter-form" id="newsletter-form">
+                    <div class="newsletter-input-group">
+                        <input type="email" id="newsletter-email" placeholder="Tu email" required>
+                        <button type="submit" class="btn btn-primary">Suscribirse</button>
+                    </div>
+                    <p class="newsletter-terms">Al suscribirte, aceptas recibir comunicaciones de marketing. Puedes darte de baja en cualquier momento.</p>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <span class="logo-icon">🛒</span>
+                        <span class="logo-text">TICS Store</span>
+                    </div>
+                    <p class="footer-description">Tu tienda de confianza para productos tecnológicos de última generación.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link" aria-label="Facebook">📘</a>
+                        <a href="#" class="social-link" aria-label="Twitter">🐦</a>
+                        <a href="#" class="social-link" aria-label="Instagram">📷</a>
+                        <a href="#" class="social-link" aria-label="LinkedIn">💼</a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h3 class="footer-title">Productos</h3>
+                    <ul class="footer-links">
+                        <li><a href="shop.html?category=Tecnología">Smartphones</a></li>
+                        <li><a href="shop.html?category=Computadoras">Laptops</a></li>
+                        <li><a href="shop.html?category=Audio">Audio</a></li>
+                        <li><a href="shop.html?category=Wearables">Wearables</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3 class="footer-title">Atención al Cliente</h3>
+                    <ul class="footer-links">
+                        <li><a href="contact.html">Contacto</a></li>
+                        <li><a href="#">Centro de Ayuda</a></li>
+                        <li><a href="#">Devoluciones</a></li>
+                        <li><a href="#">Seguimiento de Pedido</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3 class="footer-title">Información Legal</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Términos y Condiciones</a></li>
+                        <li><a href="#">Política de Privacidad</a></li>
+                        <li><a href="#">Política de Cookies</a></li>
+                        <li><a href="#">Aviso Legal</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 TICS Store. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Loading Spinner -->
+    <div class="loading-spinner" id="loading-spinner">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- JavaScript -->
+    <script src="js/main.js"></script>
+    <script src="js/products.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/search.js"></script>
+</body>
+</html>
