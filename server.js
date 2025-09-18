@@ -4,7 +4,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const path = require('path');
-const { initDatabase } = require('./database/init');
+const { initDatabase } = require('./database/hybrid-init');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -38,6 +38,7 @@ app.use(express.static(path.join(__dirname)));
 
 // API Routes
 app.use('/api/users', require('./routes/users'));
+app.use('/api/products', require('./routes/products'));
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

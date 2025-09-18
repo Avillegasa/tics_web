@@ -59,6 +59,45 @@ class AdminPanel {
                 this.hideUserModal();
             }
         });
+
+        // Product management
+        document.getElementById('add-product-btn').addEventListener('click', () => {
+            this.showProductModal();
+        });
+
+        document.getElementById('product-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.handleProductSubmit();
+        });
+
+        // Product modal controls
+        document.getElementById('product-modal-close').addEventListener('click', () => {
+            this.hideProductModal();
+        });
+
+        document.getElementById('product-cancel-btn').addEventListener('click', () => {
+            this.hideProductModal();
+        });
+
+        // Close product modal on background click
+        document.getElementById('product-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'product-modal') {
+                this.hideProductModal();
+            }
+        });
+
+        // Product search and filters
+        document.getElementById('product-search').addEventListener('input', (e) => {
+            this.debounce(() => this.filterProducts(), 300);
+        });
+
+        document.getElementById('product-category-filter').addEventListener('change', () => {
+            this.filterProducts();
+        });
+
+        document.getElementById('product-status-filter').addEventListener('change', () => {
+            this.filterProducts();
+        });
     }
 
     checkAuthentication() {
@@ -180,6 +219,8 @@ class AdminPanel {
         // Load section data
         if (sectionName === 'users') {
             this.loadUsers();
+        } else if (sectionName === 'products') {
+            this.loadProducts();
         }
     }
 
@@ -468,6 +509,392 @@ class AdminPanel {
 
     showWarning(message) {
         this.showToast(message, 'warning');
+    }
+
+    // ================================================
+    // PRODUCT MANAGEMENT METHODS
+    // ================================================
+
+    async loadProducts() {
+        try {
+            const token = localStorage.getItem('admin_token');
+            const loadingElement = document.getElementById('products-loading');
+            const tableBody = document.getElementById('products-table-body');
+            const noDataElement = document.getElementById('products-no-data');
+
+            if (loadingElement) loadingElement.style.display = 'block';
+            if (tableBody) tableBody.innerHTML = '';
+            if (noDataElement) noDataElement.style.display = 'none';
+
+            const response = await fetch('/api/products', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                this.allProducts = data.products || [];
+                this.renderProducts(this.allProducts);
+                this.loadCategories();
+            } else {
+                this.showError('Error al cargar productos');
+            }
+        } catch (error) {
+            console.error('Error loading products:', error);
+            this.showError('Error al cargar productos');
+        } finally {
+            const loadingElement = document.getElementById('products-loading');
+            if (loadingElement) loadingElement.style.display = 'none';
+        }
+    }
+
+    async loadCategories() {
+        try {
+            const response = await fetch('/api/products/categories');
+            if (response.ok) {
+                const data = await response.json();
+                const categoryFilter = document.getElementById('product-category-filter');
+                if (categoryFilter) {
+                    // Clear existing options except "All categories"
+                    const firstOption = categoryFilter.firstElementChild;
+                    categoryFilter.innerHTML = '';
+                    categoryFilter.appendChild(firstOption);
+
+                    // Add category options
+                    data.categories.forEach(cat => {
+                        const option = document.createElement('option');
+                        option.value = cat.category;
+                        option.textContent = cat.category;
+                        categoryFilter.appendChild(option);
+                    });
+                }
+            }
+        } catch (error) {
+            console.error('Error loading categories:', error);
+        }
+    }
+
+    renderProducts(products) {
+        const tableBody = document.getElementById('products-table-body');
+        const noDataElement = document.getElementById('products-no-data');
+        const countElement = document.getElementById('products-count');
+
+        if (!products || products.length === 0) {
+            if (tableBody) tableBody.innerHTML = '';
+            if (noDataElement) noDataElement.style.display = 'block';
+            if (countElement) countElement.textContent = '0 productos';
+            return;
+        }
+
+        if (noDataElement) noDataElement.style.display = 'none';
+        if (countElement) countElement.textContent = `${products.length} producto${products.length !== 1 ? 's' : ''}`;
+
+        if (tableBody) {
+            tableBody.innerHTML = products.map(product => this.createProductRow(product)).join('');
+
+            // Add event listeners to action buttons
+            tableBody.querySelectorAll('.edit-product-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const productId = parseInt(e.target.dataset.productId);
+                    this.editProduct(productId);
+                });
+            });
+
+            tableBody.querySelectorAll('.delete-product-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const productId = parseInt(e.target.dataset.productId);
+                    const productTitle = e.target.dataset.productTitle;
+                    this.deleteProduct(productId, productTitle);
+                });
+            });
+        }
+    }
+
+    createProductRow(product) {
+        const price = product.sale_price || product.price;
+        const hasDiscount = product.sale_price && product.sale_price < product.price;
+        const status = product.is_active ? 'Activo' : 'Inactivo';
+        const statusClass = product.is_active ? 'status-active' : 'status-inactive';
+
+        return `
+            <tr>
+                <td>${product.id}</td>
+                <td>
+                    <img src="${product.images && product.images.length > 0 ? product.images[0] : 'https://via.placeholder.com/50'}"
+                         alt="${product.title}" class="product-thumbnail">
+                </td>
+                <td>
+                    <div class="product-title-cell">
+                        <strong>${this.escapeHtml(product.title)}</strong>
+                        ${product.description ? `<br><small class="text-muted">${this.escapeHtml(product.description.substring(0, 100))}${product.description.length > 100 ? '...' : ''}</small>` : ''}
+                    </div>
+                </td>
+                <td><code>${this.escapeHtml(product.sku)}</code></td>
+                <td>${this.escapeHtml(product.category || 'Sin categoría')}</td>
+                <td>
+                    <div class="price-cell">
+                        $${price.toFixed(2)}
+                        ${hasDiscount ? `<br><small class="text-muted"><s>$${product.price.toFixed(2)}</s></small>` : ''}
+                    </div>
+                </td>
+                <td>
+                    <span class="stock-badge ${product.stock <= 0 ? 'stock-low' : product.stock < 10 ? 'stock-medium' : 'stock-high'}">
+                        ${product.stock}
+                    </span>
+                </td>
+                <td><span class="status-badge ${statusClass}">${status}</span></td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="btn btn-sm btn-secondary edit-product-btn"
+                                data-product-id="${product.id}" title="Editar">
+                            ✏️
+                        </button>
+                        <button class="btn btn-sm btn-danger delete-product-btn"
+                                data-product-id="${product.id}"
+                                data-product-title="${this.escapeHtml(product.title)}" title="Eliminar">
+                            🗑️
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }
+
+    showProductModal(product = null) {
+        const modal = document.getElementById('product-modal');
+        const form = document.getElementById('product-form');
+        const title = document.getElementById('product-modal-title');
+
+        this.currentEditProductId = product ? product.id : null;
+
+        if (product) {
+            title.textContent = 'Editar Producto';
+            this.populateProductForm(product);
+        } else {
+            title.textContent = 'Agregar Producto';
+            form.reset();
+        }
+
+        modal.style.display = 'flex';
+    }
+
+    hideProductModal() {
+        document.getElementById('product-modal').style.display = 'none';
+        document.getElementById('product-form').reset();
+        this.currentEditProductId = null;
+    }
+
+    populateProductForm(product) {
+        document.getElementById('product-title').value = product.title || '';
+        document.getElementById('product-sku').value = product.sku || '';
+        document.getElementById('product-category').value = product.category || '';
+        document.getElementById('product-price').value = product.price || '';
+        document.getElementById('product-sale-price').value = product.sale_price || '';
+        document.getElementById('product-stock').value = product.stock || 0;
+        document.getElementById('product-rating').value = product.rating || 0;
+        document.getElementById('product-description').value = product.description || '';
+
+        // Handle images array
+        if (product.images && Array.isArray(product.images)) {
+            document.getElementById('product-images').value = product.images.join('\n');
+        }
+
+        // Handle tags array
+        if (product.tags && Array.isArray(product.tags)) {
+            document.getElementById('product-tags').value = product.tags.join(', ');
+        }
+
+        // Handle attributes object
+        if (product.attributes && typeof product.attributes === 'object') {
+            document.getElementById('product-attributes').value = JSON.stringify(product.attributes, null, 2);
+        }
+    }
+
+    async handleProductSubmit() {
+        try {
+            const formData = this.getProductFormData();
+
+            // Validation
+            if (!formData.title || !formData.sku || !formData.price) {
+                this.showError('Por favor completa todos los campos requeridos');
+                return;
+            }
+
+            if (formData.price <= 0) {
+                this.showError('El precio debe ser mayor a 0');
+                return;
+            }
+
+            if (formData.sale_price && formData.sale_price >= formData.price) {
+                this.showError('El precio de oferta debe ser menor al precio regular');
+                return;
+            }
+
+            // Validate JSON attributes
+            if (formData.attributes) {
+                try {
+                    JSON.parse(formData.attributes);
+                } catch (e) {
+                    this.showError('El formato de atributos no es JSON válido');
+                    return;
+                }
+            }
+
+            const token = localStorage.getItem('admin_token');
+            const url = this.currentEditProductId
+                ? `/api/products/${this.currentEditProductId}`
+                : '/api/products';
+            const method = this.currentEditProductId ? 'PUT' : 'POST';
+
+            const response = await fetch(url, {
+                method: method,
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                this.showSuccess(this.currentEditProductId ? 'Producto actualizado exitosamente' : 'Producto creado exitosamente');
+                this.hideProductModal();
+                this.loadProducts();
+            } else {
+                this.showError(data.error || 'Error al guardar producto');
+            }
+        } catch (error) {
+            console.error('Error submitting product:', error);
+            this.showError('Error al guardar producto');
+        }
+    }
+
+    getProductFormData() {
+        const formData = {
+            title: document.getElementById('product-title').value.trim(),
+            sku: document.getElementById('product-sku').value.trim(),
+            category: document.getElementById('product-category').value.trim(),
+            price: parseFloat(document.getElementById('product-price').value),
+            sale_price: document.getElementById('product-sale-price').value ? parseFloat(document.getElementById('product-sale-price').value) : null,
+            stock: parseInt(document.getElementById('product-stock').value) || 0,
+            rating: parseFloat(document.getElementById('product-rating').value) || 0,
+            description: document.getElementById('product-description').value.trim()
+        };
+
+        // Process images
+        const imagesText = document.getElementById('product-images').value.trim();
+        formData.images = imagesText ? imagesText.split('\n').map(url => url.trim()).filter(url => url) : [];
+
+        // Process tags
+        const tagsText = document.getElementById('product-tags').value.trim();
+        formData.tags = tagsText ? tagsText.split(',').map(tag => tag.trim()).filter(tag => tag) : [];
+
+        // Process attributes
+        const attributesText = document.getElementById('product-attributes').value.trim();
+        if (attributesText) {
+            try {
+                formData.attributes = JSON.parse(attributesText);
+            } catch (e) {
+                formData.attributes = {};
+            }
+        } else {
+            formData.attributes = {};
+        }
+
+        return formData;
+    }
+
+    editProduct(productId) {
+        const product = this.allProducts.find(p => p.id === productId);
+        if (product) {
+            this.showProductModal(product);
+        }
+    }
+
+    async deleteProduct(productId, productTitle) {
+        if (!confirm(`¿Estás seguro de que quieres eliminar el producto "${productTitle}"?`)) {
+            return;
+        }
+
+        try {
+            const token = localStorage.getItem('admin_token');
+            const response = await fetch(`/api/products/${productId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                this.showSuccess('Producto eliminado exitosamente');
+                this.loadProducts();
+            } else {
+                this.showError(data.error || 'Error al eliminar producto');
+            }
+        } catch (error) {
+            console.error('Error deleting product:', error);
+            this.showError('Error al eliminar producto');
+        }
+    }
+
+    filterProducts() {
+        if (!this.allProducts) return;
+
+        const searchTerm = document.getElementById('product-search').value.toLowerCase().trim();
+        const categoryFilter = document.getElementById('product-category-filter').value;
+        const statusFilter = document.getElementById('product-status-filter').value;
+
+        let filtered = this.allProducts.filter(product => {
+            // Search filter
+            if (searchTerm) {
+                const searchableText = [
+                    product.title,
+                    product.description,
+                    product.sku,
+                    product.category
+                ].join(' ').toLowerCase();
+
+                if (!searchableText.includes(searchTerm)) {
+                    return false;
+                }
+            }
+
+            // Category filter
+            if (categoryFilter && product.category !== categoryFilter) {
+                return false;
+            }
+
+            // Status filter
+            if (statusFilter) {
+                if (statusFilter === 'active' && !product.is_active) {
+                    return false;
+                }
+                if (statusFilter === 'inactive' && product.is_active) {
+                    return false;
+                }
+            }
+
+            return true;
+        });
+
+        this.renderProducts(filtered);
+    }
+
+    debounce(func, wait) {
+        clearTimeout(this.debounceTimeout);
+        this.debounceTimeout = setTimeout(func, wait);
+    }
+
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     }
 }
 

@@ -46,7 +46,7 @@ let currentFilters = {
 // ================================================
 
 /**
- * Load products from JSON file with caching
+ * Load products from API with caching
  * @returns {Promise<Array>} Array of products
  */
 async function loadProducts() {
@@ -67,13 +67,18 @@ async function loadProducts() {
   }
 
   try {
-    console.log('Loading products from data/products.json...');
-    const response = await fetch('data/products.json');
+    console.log('Loading products from API...');
+    const response = await fetch('/api/products');
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    productsData = await response.json();
+    const data = await response.json();
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to load products');
+    }
+
+    productsData = data.products;
 
     // Export to global scope for search functionality
     window.productsData = productsData;
@@ -116,35 +121,76 @@ function getProductsByCategory(category) {
 
 /**
  * Get featured products
- * @returns {Array} Array of featured products
+ * @returns {Promise<Array>} Array of featured products
  */
-function getFeaturedProducts() {
-  // For demo, we'll consider products with sale price as featured
-  const featured = productsData.filter(product => product.salePrice || product.rating >= 4.5);
-  return featured.slice(0, PRODUCTS_CONFIG.FEATURED_COUNT);
+async function getFeaturedProducts() {
+  try {
+    console.log('Loading featured products from API...');
+    const response = await fetch(`/api/products/featured?limit=${PRODUCTS_CONFIG.FEATURED_COUNT}`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to load featured products');
+    }
+
+    console.log('Featured products loaded successfully:', data.products.length);
+    return data.products;
+  } catch (error) {
+    console.error('Error loading featured products:', error);
+    // Fallback to local data if available
+    if (productsData.length > 0) {
+      const featured = productsData.filter(product => product.salePrice || product.sale_price || product.rating >= 4.5);
+      return featured.slice(0, PRODUCTS_CONFIG.FEATURED_COUNT);
+    }
+    return [];
+  }
 }
 
 /**
  * Get related products based on category and tags
  * @param {Object} currentProduct - Current product
- * @returns {Array} Array of related products
+ * @returns {Promise<Array>} Array of related products
  */
-function getRelatedProducts(currentProduct) {
+async function getRelatedProducts(currentProduct) {
   if (!currentProduct) return [];
-  
-  const related = productsData.filter(product => {
-    if (product.id === currentProduct.id) return false;
-    
-    // Same category or shared tags
-    const sameCategory = product.category === currentProduct.category;
-    const sharedTags = currentProduct.tags?.some(tag => 
-      product.tags?.includes(tag)
-    );
-    
-    return sameCategory || sharedTags;
-  });
-  
-  return related.slice(0, PRODUCTS_CONFIG.RELATED_COUNT);
+
+  try {
+    console.log('Loading related products from API...');
+    const response = await fetch(`/api/products/${currentProduct.id}/related?limit=${PRODUCTS_CONFIG.RELATED_COUNT}`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to load related products');
+    }
+
+    console.log('Related products loaded successfully:', data.products.length);
+    return data.products;
+  } catch (error) {
+    console.error('Error loading related products:', error);
+    // Fallback to local data if available
+    if (productsData.length > 0) {
+      const related = productsData.filter(product => {
+        if (product.id === currentProduct.id) return false;
+
+        // Same category or shared tags
+        const sameCategory = product.category === currentProduct.category;
+        const sharedTags = currentProduct.tags?.some(tag =>
+          product.tags?.includes(tag)
+        );
+
+        return sameCategory || sharedTags;
+      });
+
+      return related.slice(0, PRODUCTS_CONFIG.RELATED_COUNT);
+    }
+    return [];
+  }
 }
 
 // ================================================
@@ -164,7 +210,7 @@ function filterProducts(products) {
     }
     
     // Price range filter
-    const price = product.salePrice || product.price;
+    const price = product.sale_price || product.price;
     if (currentFilters.priceMin && price < currentFilters.priceMin) {
       return false;
     }
@@ -188,7 +234,7 @@ function filterProducts(products) {
     }
     
     // Sale filter
-    if (currentFilters.onSale && !product.salePrice) {
+    if (currentFilters.onSale && !product.sale_price) {
       return false;
     }
     
@@ -197,16 +243,50 @@ function filterProducts(products) {
 }
 
 /**
- * Search products by query
+ * Search products by query using API
+ * @param {string} query - Search query
+ * @returns {Promise<Array>} Matching products
+ */
+async function searchProductsAPI(query) {
+  if (!query || query.trim() === '') {
+    return await loadProducts();
+  }
+
+  try {
+    console.log('Searching products via API:', query);
+    const response = await fetch(`/api/products/search?q=${encodeURIComponent(query.trim())}`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to search products');
+    }
+
+    console.log('Search completed:', data.products.length, 'results');
+    return data.products;
+  } catch (error) {
+    console.error('Error searching products:', error);
+    // Fallback to local search if available
+    if (productsData.length > 0) {
+      return searchProducts(productsData, query);
+    }
+    return [];
+  }
+}
+
+/**
+ * Search products by query (local fallback)
  * @param {Array} products - Products to search
  * @param {string} query - Search query
  * @returns {Array} Matching products
  */
 function searchProducts(products, query) {
   if (!query || query.trim() === '') return products;
-  
+
   const searchTerm = query.toLowerCase().trim();
-  
+
   return products.filter(product => {
     const searchableText = [
       product.title,
@@ -214,7 +294,7 @@ function searchProducts(products, query) {
       product.category,
       ...(product.tags || [])
     ].join(' ').toLowerCase();
-    
+
     return searchableText.includes(searchTerm);
   });
 }
@@ -234,10 +314,10 @@ function sortProducts(products, sortBy) {
   
   switch (sortBy) {
     case 'price-asc':
-      return sorted.sort((a, b) => (a.salePrice || a.price) - (b.salePrice || b.price));
-    
+      return sorted.sort((a, b) => (a.sale_price || a.price) - (b.sale_price || b.price));
+
     case 'price-desc':
-      return sorted.sort((a, b) => (b.salePrice || b.price) - (a.salePrice || a.price));
+      return sorted.sort((a, b) => (b.sale_price || b.price) - (a.sale_price || a.price));
     
     case 'rating':
       return sorted.sort((a, b) => b.rating - a.rating);
@@ -248,10 +328,10 @@ function sortProducts(products, sortBy) {
     
     case 'featured':
     default:
-      // Featured products first (with salePrice), then by rating
+      // Featured products first (with sale_price), then by rating
       return sorted.sort((a, b) => {
-        const aFeatured = a.salePrice ? 1 : 0;
-        const bFeatured = b.salePrice ? 1 : 0;
+        const aFeatured = a.sale_price ? 1 : 0;
+        const bFeatured = b.sale_price ? 1 : 0;
         
         if (aFeatured !== bFeatured) {
           return bFeatured - aFeatured;
@@ -273,12 +353,12 @@ function sortProducts(products, sortBy) {
  * @returns {string} HTML string
  */
 function createProductCard(product, showAddToCart = true) {
-  const hasDiscount = product.salePrice && product.salePrice < product.price;
-  const discountPercentage = hasDiscount 
-    ? Math.round(((product.price - product.salePrice) / product.price) * 100)
+  const hasDiscount = product.sale_price && product.sale_price < product.price;
+  const discountPercentage = hasDiscount
+    ? Math.round(((product.price - product.sale_price) / product.price) * 100)
     : 0;
-  
-  const currentPrice = product.salePrice || product.price;
+
+  const currentPrice = product.sale_price || product.price;
   const isOutOfStock = product.stock <= 0;
   
   // Generate star rating
@@ -568,7 +648,7 @@ async function initProducts() {
     // Initialize featured products on home page
     const featuredContainer = document.getElementById('featured-products');
     if (featuredContainer) {
-      const featured = getFeaturedProducts();
+      const featured = await getFeaturedProducts();
       renderProductsGrid(featured, featuredContainer);
     }
     
@@ -636,6 +716,7 @@ window.ProductsManager = {
   getRelatedProducts,
   renderProductsGrid,
   searchProducts,
+  searchProductsAPI,
   updateSort,
   updatePriceFilter,
   clearAllFilters,

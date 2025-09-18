@@ -1,39 +1,99 @@
+const { query } = require('../database/hybrid-init');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { body, validationResult } = require('express-validator');
-const { db } = require('../database/init');
+const { validationResult, body } = require('express-validator');
 
-// Validation rules
+// Validation rules for user registration
 const userValidationRules = () => {
     return [
-        body('username').isLength({ min: 3, max: 50 }).trim().escape(),
-        body('email').isEmail().normalizeEmail(),
-        body('password').isLength({ min: 6 }),
-        body('first_name').isLength({ min: 1, max: 50 }).trim().escape(),
-        body('last_name').isLength({ min: 1, max: 50 }).trim().escape(),
-        body('phone').optional().isMobilePhone(),
-        body('role').optional().isIn(['customer', 'admin'])
+        body('username')
+            .isLength({ min: 3, max: 50 })
+            .withMessage('Username must be between 3 and 50 characters')
+            .matches(/^[a-zA-Z0-9_]+$/)
+            .withMessage('Username can only contain letters, numbers, and underscores'),
+        body('email')
+            .isEmail()
+            .withMessage('Please provide a valid email')
+            .normalizeEmail(),
+        body('password')
+            .isLength({ min: 6 })
+            .withMessage('Password must be at least 6 characters long'),
+        body('first_name')
+            .isLength({ min: 1, max: 50 })
+            .withMessage('First name is required and must be less than 50 characters'),
+        body('last_name')
+            .isLength({ min: 1, max: 50 })
+            .withMessage('Last name is required and must be less than 50 characters'),
+        body('role')
+            .optional()
+            .isIn(['customer', 'admin'])
+            .withMessage('Role must be either customer or admin'),
+        body('phone')
+            .optional()
+            .isMobilePhone()
+            .withMessage('Please provide a valid phone number'),
+        body('city')
+            .optional()
+            .isLength({ max: 50 })
+            .withMessage('City must be less than 50 characters'),
+        body('postal_code')
+            .optional()
+            .isLength({ max: 10 })
+            .withMessage('Postal code must be less than 10 characters'),
+        body('country')
+            .optional()
+            .isLength({ max: 50 })
+            .withMessage('Country must be less than 50 characters')
     ];
 };
 
+// Validation rules for user updates
 const updateValidationRules = () => {
     return [
-        body('username').optional().isLength({ min: 3, max: 50 }).trim().escape(),
-        body('email').optional().isEmail().normalizeEmail(),
-        body('first_name').optional().isLength({ min: 1, max: 50 }).trim().escape(),
-        body('last_name').optional().isLength({ min: 1, max: 50 }).trim().escape(),
-        body('phone').optional().isMobilePhone(),
-        body('role').optional().isIn(['customer', 'admin'])
+        body('username')
+            .optional()
+            .isLength({ min: 3, max: 50 })
+            .withMessage('Username must be between 3 and 50 characters')
+            .matches(/^[a-zA-Z0-9_]+$/)
+            .withMessage('Username can only contain letters, numbers, and underscores'),
+        body('email')
+            .optional()
+            .isEmail()
+            .withMessage('Please provide a valid email')
+            .normalizeEmail(),
+        body('password')
+            .optional()
+            .isLength({ min: 6 })
+            .withMessage('Password must be at least 6 characters long'),
+        body('first_name')
+            .optional()
+            .isLength({ min: 1, max: 50 })
+            .withMessage('First name must be less than 50 characters'),
+        body('last_name')
+            .optional()
+            .isLength({ min: 1, max: 50 })
+            .withMessage('Last name must be less than 50 characters'),
+        body('role')
+            .optional()
+            .isIn(['customer', 'admin'])
+            .withMessage('Role must be either customer or admin'),
+        body('phone')
+            .optional()
+            .isMobilePhone()
+            .withMessage('Please provide a valid phone number'),
+        body('city')
+            .optional()
+            .isLength({ max: 50 })
+            .withMessage('City must be less than 50 characters'),
+        body('postal_code')
+            .optional()
+            .isLength({ max: 10 })
+            .withMessage('Postal code must be less than 10 characters'),
+        body('country')
+            .optional()
+            .isLength({ max: 50 })
+            .withMessage('Country must be less than 50 characters')
     ];
-};
-
-// Generate JWT token
-const generateToken = (user) => {
-    return jwt.sign(
-        { id: user.id, username: user.username, email: user.email, role: user.role },
-        process.env.JWT_SECRET,
-        { expiresIn: '24h' }
-    );
 };
 
 // Register new user
@@ -41,298 +101,500 @@ const registerUser = async (req, res) => {
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
+            return res.status(400).json({
+                success: false,
+                errors: errors.array()
+            });
         }
 
-        const { username, email, password, first_name, last_name, phone, address, city, postal_code, country } = req.body;
+        const {
+            username,
+            email,
+            password,
+            first_name,
+            last_name,
+            role = 'customer',
+            phone,
+            address,
+            city,
+            postal_code,
+            country
+        } = req.body;
 
         // Check if user already exists
-        const checkUser = `SELECT id FROM users WHERE username = ? OR email = ?`;
+        const existingUserQuery = `
+            SELECT id FROM users
+            WHERE username = $1 OR email = $2
+        `;
+        const existingUser = await query(existingUserQuery, [username, email]);
 
-        db.get(checkUser, [username, email], async (err, row) => {
-            if (err) {
-                return res.status(500).json({ error: 'Database error' });
-            }
-
-            if (row) {
-                return res.status(400).json({ error: 'Username or email already exists' });
-            }
-
-            // Hash password
-            const hashedPassword = await bcrypt.hash(password, 10);
-
-            // Insert new user
-            const insertUser = `INSERT INTO users (
-                username, email, password, first_name, last_name, phone, address, city, postal_code, country
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-
-            db.run(insertUser, [
-                username, email, hashedPassword, first_name, last_name, phone, address, city, postal_code, country
-            ], function(err) {
-                if (err) {
-                    return res.status(500).json({ error: 'Failed to create user' });
-                }
-
-                // Get the created user
-                const getUser = `SELECT id, username, email, first_name, last_name, role, created_at FROM users WHERE id = ?`;
-
-                db.get(getUser, [this.lastID], (err, user) => {
-                    if (err) {
-                        return res.status(500).json({ error: 'User created but failed to retrieve' });
-                    }
-
-                    const token = generateToken(user);
-                    res.status(201).json({
-                        message: 'User created successfully',
-                        user: user,
-                        token: token
-                    });
-                });
+        if (existingUser.rows.length > 0) {
+            return res.status(400).json({
+                success: false,
+                error: 'Username or email already exists'
             });
+        }
+
+        // Hash password
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Create user
+        const insertUserQuery = `
+            INSERT INTO users (
+                username, email, password, first_name, last_name, role,
+                phone, address, city, postal_code, country
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+            RETURNING id, username, email, first_name, last_name, role, created_at
+        `;
+
+        const params = [
+            username, email, hashedPassword, first_name, last_name, role,
+            phone, address, city, postal_code, country
+        ];
+
+        const result = await query(insertUserQuery, params);
+        const newUser = result.rows[0];
+
+        // Generate JWT token
+        const token = jwt.sign(
+            {
+                userId: newUser.id,
+                username: newUser.username,
+                role: newUser.role
+            },
+            process.env.JWT_SECRET,
+            { expiresIn: '7d' }
+        );
+
+        res.status(201).json({
+            success: true,
+            message: 'User registered successfully',
+            user: {
+                id: newUser.id,
+                username: newUser.username,
+                email: newUser.email,
+                first_name: newUser.first_name,
+                last_name: newUser.last_name,
+                role: newUser.role,
+                created_at: newUser.created_at
+            },
+            token
         });
+
     } catch (error) {
-        res.status(500).json({ error: 'Server error' });
+        console.error('Error in registerUser:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Internal server error'
+        });
     }
 };
 
 // Login user
 const loginUser = async (req, res) => {
     try {
-        const { username, password } = req.body;
+        const { login, password } = req.body;
 
-        if (!username || !password) {
-            return res.status(400).json({ error: 'Username and password are required' });
+        if (!login || !password) {
+            return res.status(400).json({
+                success: false,
+                error: 'Username/email and password are required'
+            });
         }
 
-        const getUser = `SELECT * FROM users WHERE (username = ? OR email = ?) AND is_active = 1`;
+        // Find user by username or email
+        const userQuery = `
+            SELECT * FROM users
+            WHERE (username = $1 OR email = $1) AND is_active = true
+        `;
+        const result = await query(userQuery, [login]);
 
-        db.get(getUser, [username, username], async (err, user) => {
-            if (err) {
-                return res.status(500).json({ error: 'Database error' });
-            }
-
-            if (!user) {
-                return res.status(401).json({ error: 'Invalid credentials' });
-            }
-
-            // Check password
-            const isValidPassword = await bcrypt.compare(password, user.password);
-            if (!isValidPassword) {
-                return res.status(401).json({ error: 'Invalid credentials' });
-            }
-
-            // Generate token
-            const token = generateToken(user);
-
-            // Remove password from response
-            delete user.password;
-
-            res.json({
-                message: 'Login successful',
-                user: user,
-                token: token
+        if (result.rows.length === 0) {
+            return res.status(401).json({
+                success: false,
+                error: 'Invalid credentials'
             });
+        }
+
+        const user = result.rows[0];
+
+        // Check password
+        const isValidPassword = await bcrypt.compare(password, user.password);
+        if (!isValidPassword) {
+            return res.status(401).json({
+                success: false,
+                error: 'Invalid credentials'
+            });
+        }
+
+        // Generate JWT token
+        const token = jwt.sign(
+            {
+                userId: user.id,
+                username: user.username,
+                role: user.role
+            },
+            process.env.JWT_SECRET,
+            { expiresIn: '7d' }
+        );
+
+        res.json({
+            success: true,
+            message: 'Login successful',
+            user: {
+                id: user.id,
+                username: user.username,
+                email: user.email,
+                first_name: user.first_name,
+                last_name: user.last_name,
+                role: user.role
+            },
+            token
         });
+
     } catch (error) {
-        res.status(500).json({ error: 'Server error' });
+        console.error('Error in loginUser:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Internal server error'
+        });
+    }
+};
+
+// Get current user
+const getCurrentUser = async (req, res) => {
+    try {
+        const userId = req.user.userId;
+
+        const userQuery = `
+            SELECT id, username, email, first_name, last_name, role, phone,
+                   address, city, postal_code, country, created_at
+            FROM users
+            WHERE id = $1 AND is_active = true
+        `;
+        const result = await query(userQuery, [userId]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                error: 'User not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            user: result.rows[0]
+        });
+
+    } catch (error) {
+        console.error('Error in getCurrentUser:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Internal server error'
+        });
     }
 };
 
 // Get all users (admin only)
-const getAllUsers = (req, res) => {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-    const offset = (page - 1) * limit;
+const getAllUsers = async (req, res) => {
+    try {
+        const { page = 1, limit = 10, search, role } = req.query;
+        const offset = (page - 1) * limit;
 
-    const countQuery = `SELECT COUNT(*) as total FROM users`;
-    const getUsersQuery = `SELECT id, username, email, first_name, last_name, role, phone, city, country, is_active, created_at FROM users ORDER BY created_at DESC LIMIT ? OFFSET ?`;
+        let countQuery = `SELECT COUNT(*) FROM users WHERE is_active = true`;
+        let userQuery = `
+            SELECT id, username, email, first_name, last_name, role, phone,
+                   city, country, created_at, updated_at
+            FROM users
+            WHERE is_active = true
+        `;
 
-    db.get(countQuery, [], (err, countResult) => {
-        if (err) {
-            return res.status(500).json({ error: 'Database error' });
+        const params = [];
+        let paramCount = 0;
+
+        if (search) {
+            paramCount++;
+            const searchCondition = ` AND (username ILIKE $${paramCount} OR email ILIKE $${paramCount} OR first_name ILIKE $${paramCount} OR last_name ILIKE $${paramCount})`;
+            countQuery += searchCondition;
+            userQuery += searchCondition;
+            params.push(`%${search}%`);
         }
 
-        db.all(getUsersQuery, [limit, offset], (err, users) => {
-            if (err) {
-                return res.status(500).json({ error: 'Database error' });
-            }
+        if (role) {
+            paramCount++;
+            const roleCondition = ` AND role = $${paramCount}`;
+            countQuery += roleCondition;
+            userQuery += roleCondition;
+            params.push(role);
+        }
 
-            res.json({
-                users: users,
-                pagination: {
-                    page: page,
-                    limit: limit,
-                    total: countResult.total,
-                    pages: Math.ceil(countResult.total / limit)
-                }
-            });
+        userQuery += ` ORDER BY created_at DESC LIMIT $${paramCount + 1} OFFSET $${paramCount + 2}`;
+        params.push(parseInt(limit), offset);
+
+        const [countResult, usersResult] = await Promise.all([
+            query(countQuery, params.slice(0, paramCount)),
+            query(userQuery, params)
+        ]);
+
+        const totalUsers = parseInt(countResult.rows[0].count);
+        const totalPages = Math.ceil(totalUsers / limit);
+
+        res.json({
+            success: true,
+            users: usersResult.rows,
+            pagination: {
+                currentPage: parseInt(page),
+                totalPages,
+                totalUsers,
+                hasNextPage: page < totalPages,
+                hasPrevPage: page > 1
+            }
         });
-    });
+
+    } catch (error) {
+        console.error('Error in getAllUsers:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Internal server error'
+        });
+    }
 };
 
 // Get user by ID
-const getUserById = (req, res) => {
-    const userId = req.params.id;
-    const getUser = `SELECT id, username, email, first_name, last_name, role, phone, address, city, postal_code, country, is_active, created_at FROM users WHERE id = ?`;
+const getUserById = async (req, res) => {
+    try {
+        const { id } = req.params;
 
-    db.get(getUser, [userId], (err, user) => {
-        if (err) {
-            return res.status(500).json({ error: 'Database error' });
+        const userQuery = `
+            SELECT id, username, email, first_name, last_name, role, phone,
+                   address, city, postal_code, country, created_at, updated_at
+            FROM users
+            WHERE id = $1 AND is_active = true
+        `;
+        const result = await query(userQuery, [id]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                error: 'User not found'
+            });
         }
 
-        if (!user) {
-            return res.status(404).json({ error: 'User not found' });
-        }
+        res.json({
+            success: true,
+            user: result.rows[0]
+        });
 
-        res.json({ user: user });
-    });
+    } catch (error) {
+        console.error('Error in getUserById:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Internal server error'
+        });
+    }
 };
 
 // Update user
-const updateUser = (req, res) => {
+const updateUser = async (req, res) => {
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
+            return res.status(400).json({
+                success: false,
+                errors: errors.array()
+            });
         }
 
-        const userId = req.params.id;
-        const updates = req.body;
+        const { id } = req.params;
+        const {
+            username,
+            email,
+            password,
+            first_name,
+            last_name,
+            role,
+            phone,
+            address,
+            city,
+            postal_code,
+            country
+        } = req.body;
 
-        // Remove password from updates if empty
-        if (updates.password && updates.password.trim() === '') {
-            delete updates.password;
+        // Check if user exists
+        const existingUserQuery = `SELECT id FROM users WHERE id = $1 AND is_active = true`;
+        const existingUser = await query(existingUserQuery, [id]);
+
+        if (existingUser.rows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                error: 'User not found'
+            });
         }
 
-        // Build dynamic update query
-        const allowedFields = ['username', 'email', 'first_name', 'last_name', 'phone', 'address', 'city', 'postal_code', 'country', 'role', 'is_active'];
-        const updateFields = [];
-        const values = [];
+        // Check for username/email conflicts
+        if (username || email) {
+            const conflictQuery = `
+                SELECT id FROM users
+                WHERE (username = $1 OR email = $2) AND id != $3 AND is_active = true
+            `;
+            const conflict = await query(conflictQuery, [username || '', email || '', id]);
 
-        Object.keys(updates).forEach(key => {
-            if (allowedFields.includes(key) && updates[key] !== undefined) {
-                updateFields.push(`${key} = ?`);
-                values.push(updates[key]);
+            if (conflict.rows.length > 0) {
+                return res.status(400).json({
+                    success: false,
+                    error: 'Username or email already exists'
+                });
             }
+        }
+
+        // Build update query dynamically
+        const updates = [];
+        const params = [];
+        let paramCount = 0;
+
+        if (username) {
+            paramCount++;
+            updates.push(`username = $${paramCount}`);
+            params.push(username);
+        }
+
+        if (email) {
+            paramCount++;
+            updates.push(`email = $${paramCount}`);
+            params.push(email);
+        }
+
+        if (password) {
+            paramCount++;
+            const hashedPassword = await bcrypt.hash(password, 10);
+            updates.push(`password = $${paramCount}`);
+            params.push(hashedPassword);
+        }
+
+        if (first_name) {
+            paramCount++;
+            updates.push(`first_name = $${paramCount}`);
+            params.push(first_name);
+        }
+
+        if (last_name) {
+            paramCount++;
+            updates.push(`last_name = $${paramCount}`);
+            params.push(last_name);
+        }
+
+        if (role) {
+            paramCount++;
+            updates.push(`role = $${paramCount}`);
+            params.push(role);
+        }
+
+        if (phone !== undefined) {
+            paramCount++;
+            updates.push(`phone = $${paramCount}`);
+            params.push(phone);
+        }
+
+        if (address !== undefined) {
+            paramCount++;
+            updates.push(`address = $${paramCount}`);
+            params.push(address);
+        }
+
+        if (city !== undefined) {
+            paramCount++;
+            updates.push(`city = $${paramCount}`);
+            params.push(city);
+        }
+
+        if (postal_code !== undefined) {
+            paramCount++;
+            updates.push(`postal_code = $${paramCount}`);
+            params.push(postal_code);
+        }
+
+        if (country !== undefined) {
+            paramCount++;
+            updates.push(`country = $${paramCount}`);
+            params.push(country);
+        }
+
+        if (updates.length === 0) {
+            return res.status(400).json({
+                success: false,
+                error: 'No fields to update'
+            });
+        }
+
+        paramCount++;
+        params.push(id);
+
+        const updateQuery = `
+            UPDATE users
+            SET ${updates.join(', ')}
+            WHERE id = $${paramCount} AND is_active = true
+            RETURNING id, username, email, first_name, last_name, role
+        `;
+
+        const result = await query(updateQuery, params);
+
+        res.json({
+            success: true,
+            message: 'User updated successfully',
+            user: result.rows[0]
         });
 
-        if (updateFields.length === 0) {
-            return res.status(400).json({ error: 'No valid fields to update' });
-        }
-
-        // Add updated_at
-        updateFields.push('updated_at = CURRENT_TIMESTAMP');
-        values.push(userId);
-
-        const updateQuery = `UPDATE users SET ${updateFields.join(', ')} WHERE id = ?`;
-
-        // If password is being updated, hash it first
-        if (updates.password) {
-            bcrypt.hash(updates.password, 10, (err, hashedPassword) => {
-                if (err) {
-                    return res.status(500).json({ error: 'Password hashing failed' });
-                }
-
-                // Replace password in values array
-                const passwordIndex = Object.keys(updates).indexOf('password');
-                if (passwordIndex !== -1) {
-                    values[passwordIndex] = hashedPassword;
-                }
-
-                executeUpdate();
-            });
-        } else {
-            executeUpdate();
-        }
-
-        function executeUpdate() {
-            db.run(updateQuery, values, function(err) {
-                if (err) {
-                    if (err.message.includes('UNIQUE constraint failed')) {
-                        return res.status(400).json({ error: 'Username or email already exists' });
-                    }
-                    return res.status(500).json({ error: 'Failed to update user' });
-                }
-
-                if (this.changes === 0) {
-                    return res.status(404).json({ error: 'User not found' });
-                }
-
-                // Get updated user
-                const getUser = `SELECT id, username, email, first_name, last_name, role, phone, address, city, postal_code, country, is_active, updated_at FROM users WHERE id = ?`;
-
-                db.get(getUser, [userId], (err, user) => {
-                    if (err) {
-                        return res.status(500).json({ error: 'User updated but failed to retrieve' });
-                    }
-
-                    res.json({
-                        message: 'User updated successfully',
-                        user: user
-                    });
-                });
-            });
-        }
     } catch (error) {
-        res.status(500).json({ error: 'Server error' });
+        console.error('Error in updateUser:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Internal server error'
+        });
     }
 };
 
 // Delete user (soft delete)
-const deleteUser = (req, res) => {
-    const userId = req.params.id;
+const deleteUser = async (req, res) => {
+    try {
+        const { id } = req.params;
 
-    // Check if user exists
-    const checkUser = `SELECT id FROM users WHERE id = ?`;
+        const deleteQuery = `
+            UPDATE users
+            SET is_active = false
+            WHERE id = $1 AND is_active = true
+            RETURNING id
+        `;
+        const result = await query(deleteQuery, [id]);
 
-    db.get(checkUser, [userId], (err, user) => {
-        if (err) {
-            return res.status(500).json({ error: 'Database error' });
+        if (result.rows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                error: 'User not found'
+            });
         }
 
-        if (!user) {
-            return res.status(404).json({ error: 'User not found' });
-        }
-
-        // Soft delete by setting is_active to 0
-        const deleteQuery = `UPDATE users SET is_active = 0, updated_at = CURRENT_TIMESTAMP WHERE id = ?`;
-
-        db.run(deleteQuery, [userId], function(err) {
-            if (err) {
-                return res.status(500).json({ error: 'Failed to delete user' });
-            }
-
-            res.json({ message: 'User deleted successfully' });
+        res.json({
+            success: true,
+            message: 'User deleted successfully'
         });
-    });
-};
 
-// Get current user profile
-const getCurrentUser = (req, res) => {
-    const userId = req.user.id;
-    const getUser = `SELECT id, username, email, first_name, last_name, role, phone, address, city, postal_code, country, created_at FROM users WHERE id = ?`;
-
-    db.get(getUser, [userId], (err, user) => {
-        if (err) {
-            return res.status(500).json({ error: 'Database error' });
-        }
-
-        if (!user) {
-            return res.status(404).json({ error: 'User not found' });
-        }
-
-        res.json({ user: user });
-    });
+    } catch (error) {
+        console.error('Error in deleteUser:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Internal server error'
+        });
+    }
 };
 
 module.exports = {
+    userValidationRules,
+    updateValidationRules,
     registerUser,
     loginUser,
+    getCurrentUser,
     getAllUsers,
     getUserById,
     updateUser,
-    deleteUser,
-    getCurrentUser,
-    userValidationRules,
-    updateValidationRules
+    deleteUser
 };

@@ -12,29 +12,29 @@ Abre http://localhost:3000 en tu navegador y verifica cada elemento:
 - [✅] Menú de navegación funciona (Inicio, Tienda, Sobre Nosotros, Contacto, Admin)
 - [✅] Enlace "Admin" lleva al panel de administración
 - [✅] Contador del carrito se muestra (0)
-- [ ] Búsqueda funciona (escribir "phone" debería mostrar sugerencias)
-- [ ] Menú responsive en móvil (reducir ventana a <768px)
+- [❌] Búsqueda funciona (escribir "phone" debería mostrar sugerencias)
+- [✅ ] Menú responsive en móvil (reducir ventana a <768px)
 
 ### Contenido
-- [ ] Hero section se carga con imagen de fondo
-- [ ] Botones "Explorar Tienda" y "Ver Destacados" funcionan
-- [ ] Productos destacados se cargan dinámicamente
-- [ ] Cards de características se muestran correctamente
-- [ ] Newsletter form está presente
-- [ ] Footer se muestra con información correcta
+- [-] Hero section se carga con imagen de fondo
+- [✅] Botones "Explorar Tienda" y "Ver Destacados" funcionan
+- [✅] Productos destacados se cargan dinámicamente
+- [✅] Cards de características se muestran correctamente
+- [✅] Newsletter form está presente
+- [✅] Footer se muestra con información correcta
 
 ### Responsive
-- [ ] Diseño se adapta en móvil (< 768px)
-- [ ] Navegación colapsa en hamburger menu
-- [ ] Imágenes se redimensionan apropiadamente
-- [ ] Texto es legible en todas las resoluciones
+- [✅] Diseño se adapta en móvil (< 768px)
+- [✅] Navegación colapsa en hamburger menu
+- [✅] Imágenes se redimensionan apropiadamente
+- [✅] Texto es legible en todas las resoluciones
 
 ---
 
 ## 🛍️ Tienda (shop.html)
 
 ### Funcionalidad
-- [ ] Productos se cargan desde products.json
+- [✅] Productos se cargan desde products.json
 - [ ] Filtros por categoría funcionan
 - [ ] Ordenamiento por precio funciona
 - [ ] Botón "Agregar al carrito" funciona

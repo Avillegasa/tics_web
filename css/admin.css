@@ -664,4 +664,154 @@
     .admin-table td {
         padding: 0.5rem;
     }
+
+    .large-modal .modal-content {
+        max-width: 95%;
+        margin: 1rem;
+    }
+}
+
+/* Product-specific styles */
+.product-thumbnail {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid #e2e8f0;
+}
+
+.product-title-cell {
+    max-width: 250px;
+}
+
+.product-title-cell strong {
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.price-cell {
+    text-align: right;
+}
+
+.stock-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.stock-high {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.stock-medium {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.stock-low {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.status-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.status-active {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-inactive {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+.large-modal .modal-content {
+    max-width: 800px;
+    width: 90%;
+}
+
+.admin-filters {
+    background: #fff;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.filter-group {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.admin-search,
+.admin-filter {
+    padding: 0.5rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    font-size: 0.875rem;
+}
+
+.admin-search {
+    min-width: 250px;
+}
+
+.admin-filter {
+    min-width: 150px;
+}
+
+.results-summary {
+    margin-top: 0.5rem;
+    color: #718096;
+    font-size: 0.875rem;
+}
+
+.form-help {
+    color: #718096;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+    display: block;
+}
+
+.text-muted {
+    color: #718096;
+}
+
+@media (max-width: 768px) {
+    .filter-group {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .admin-search,
+    .admin-filter {
+        min-width: auto;
+        width: 100%;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+    }
+
+    .product-title-cell {
+        max-width: 200px;
+    }
 }
