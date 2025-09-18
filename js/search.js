@@ -19,7 +19,7 @@ const SEARCH_CONFIG = {
 // ================================================
 // STATE MANAGEMENT
 // ================================================
-let productsData = [];
+// productsData is declared in products.js, use window.productsData
 let currentSearchTerm = '';
 
 // ================================================

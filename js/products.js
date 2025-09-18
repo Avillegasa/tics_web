@@ -95,6 +95,19 @@ async function loadProducts() {
     return productsData;
   } catch (error) {
     console.error('Error loading products:', error);
+    // Fallback to JSON file
+    try {
+      console.log('Falling back to JSON file...');
+      const response = await fetch('/data/products.json');
+      if (response.ok) {
+        productsData = await response.json();
+        window.productsData = productsData;
+        console.log('Products loaded from JSON fallback:', productsData.length);
+        return productsData;
+      }
+    } catch (fallbackError) {
+      console.error('Fallback also failed:', fallbackError);
+    }
     alert('Error al cargar los productos');
     return [];
   }

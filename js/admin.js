@@ -539,12 +539,17 @@ class AdminPanel {
                 }
             });
 
+            console.log('Products response status:', response.status);
+
             if (response.ok) {
                 const data = await response.json();
+                console.log('Products data:', data);
                 this.allProducts = data.products || [];
                 this.renderProducts(this.allProducts);
                 this.loadCategories();
             } else {
+                const errorData = await response.json();
+                console.error('Products error:', errorData);
                 this.showError('Error al cargar productos');
             }
         } catch (error) {
@@ -619,8 +624,8 @@ class AdminPanel {
     }
 
     createProductRow(product) {
-        const price = product.sale_price || product.price;
-        const hasDiscount = product.sale_price && product.sale_price < product.price;
+        const price = parseFloat(product.sale_price) || parseFloat(product.price);
+        const hasDiscount = product.sale_price && parseFloat(product.sale_price) < parseFloat(product.price);
         const status = product.is_active ? 'Activo' : 'Inactivo';
         const statusClass = product.is_active ? 'status-active' : 'status-inactive';
 
@@ -642,7 +647,7 @@ class AdminPanel {
                 <td>
                     <div class="price-cell">
                         $${price.toFixed(2)}
-                        ${hasDiscount ? `<br><small class="text-muted"><s>$${product.price.toFixed(2)}</s></small>` : ''}
+                        ${hasDiscount ? `<br><small class="text-muted"><s>$${parseFloat(product.price).toFixed(2)}</s></small>` : ''}
                     </div>
                 </td>
                 <td>
@@ -738,14 +743,16 @@ class AdminPanel {
                 return;
             }
 
-            // Validate JSON attributes
+            // Validate and parse JSON attributes
             if (formData.attributes) {
                 try {
-                    JSON.parse(formData.attributes);
+                    formData.attributes = JSON.parse(formData.attributes);
                 } catch (e) {
-                    this.showError('El formato de atributos no es JSON válido');
+                    this.showError(`El formato de atributos no es JSON válido: ${e.message}`);
                     return;
                 }
+            } else {
+                formData.attributes = {};
             }
 
             const token = localStorage.getItem('admin_token');
@@ -801,13 +808,9 @@ class AdminPanel {
         // Process attributes
         const attributesText = document.getElementById('product-attributes').value.trim();
         if (attributesText) {
-            try {
-                formData.attributes = JSON.parse(attributesText);
-            } catch (e) {
-                formData.attributes = {};
-            }
+            formData.attributes = attributesText; // Keep as string for validation
         } else {
-            formData.attributes = {};
+            formData.attributes = null;
         }
 
         return formData;
