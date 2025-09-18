@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  web-test:
+    image: tics-store-test
+    ports:
+      - "3002:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - JWT_SECRET=test_jwt_secret_for_docker
+      - DB_PATH=/app/database/store.db
+      - CORS_ORIGIN=http://localhost:3002
+    volumes:
+      - ./test_database:/app/database
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Search</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        #search-input {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+        #search-suggestions {
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            max-height: 300px;
+            overflow-y: auto;
+            background: white;
+        }
+        .search-suggestion {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .search-suggestion:hover {
+            background: #f0f0f0;
+        }
+        .suggestion-icon {
+            font-size: 20px;
+        }
+        .suggestion-content {
+            flex: 1;
+        }
+        .suggestion-text {
+            font-weight: 500;
+        }
+        .suggestion-category {
+            color: #666;
+            font-size: 14px;
+        }
+        .debug-info {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🔍 Test Search Functionality</h1>
+        <p>Type "phone" or "smartphone" to test search suggestions:</p>
+
+        <input type="text" id="search-input" placeholder="Buscar productos..." autocomplete="off">
+        <div id="search-suggestions"></div>
+
+        <div class="debug-info" id="debug-info">
+            Loading...
+        </div>
+    </div>
+
+    <script>
+        // Simple debug logger
+        function debug(message) {
+            console.log(message);
+            const debugDiv = document.getElementById('debug-info');
+            debugDiv.innerHTML += '<div>' + JSON.stringify(message, null, 2) + '</div>';
+        }
+
+        // Load products data directly
+        async function loadProducts() {
+            try {
+                debug('Loading products from data/products.json...');
+                const response = await fetch('data/products.json');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                window.productsData = await response.json();
+                debug(`Products loaded: ${window.productsData.length} items`);
+                debug(`First product: ${window.productsData[0]?.title || 'None'}`);
+
+                // Show some sample products
+                if (window.productsData.length > 0) {
+                    debug('Sample products:');
+                    window.productsData.slice(0, 3).forEach((product, index) => {
+                        debug(`${index + 1}. ${product.title} (${product.category})`);
+                    });
+                }
+            } catch (error) {
+                debug('Error loading products: ' + error.message);
+            }
+        }
+
+        // Simple search function
+        function searchProducts(query) {
+            if (!query || query.length < 2) return [];
+
+            const products = window.productsData || [];
+            debug(`Searching for "${query}" in ${products.length} products`);
+
+            const results = products.filter(product => {
+                const searchText = [
+                    product.title,
+                    product.description,
+                    product.category
+                ].join(' ').toLowerCase();
+
+                return searchText.includes(query.toLowerCase());
+            });
+
+            debug(`Found ${results.length} results`);
+            return results.slice(0, 5);
+        }
+
+        // Show suggestions
+        function showSuggestions(products) {
+            const suggestionsDiv = document.getElementById('search-suggestions');
+
+            if (products.length === 0) {
+                suggestionsDiv.innerHTML = '<div style="padding: 20px; text-align: center; color: #666;">No se encontraron productos</div>';
+                return;
+            }
+
+            const html = products.map(product => `
+                <div class="search-suggestion">
+                    <span class="suggestion-icon">📱</span>
+                    <div class="suggestion-content">
+                        <div class="suggestion-text">${product.title}</div>
+                        <div class="suggestion-category">${product.category}</div>
+                    </div>
+                </div>
+            `).join('');
+
+            suggestionsDiv.innerHTML = html;
+        }
+
+        // Setup search input
+        function setupSearch() {
+            const input = document.getElementById('search-input');
+            if (!input) {
+                debug('Search input not found!');
+                return;
+            }
+
+            debug('Setting up search input...');
+
+            input.addEventListener('input', (e) => {
+                const query = e.target.value.trim();
+                debug(`Input changed: "${query}"`);
+
+                if (query.length >= 2) {
+                    const results = searchProducts(query);
+                    showSuggestions(results);
+                } else {
+                    document.getElementById('search-suggestions').innerHTML = '';
+                }
+            });
+
+            debug('Search input setup complete');
+        }
+
+        // Initialize everything
+        async function init() {
+            debug('Initializing test page...');
+            await loadProducts();
+            setupSearch();
+            debug('Test page ready!');
+        }
+
+        // Start when page loads
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

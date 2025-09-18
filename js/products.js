@@ -51,30 +51,46 @@ let currentFilters = {
  */
 async function loadProducts() {
   // Check cache first
-  const cached = TICS.StorageManager.load('products-cache');
-  const cacheTime = TICS.StorageManager.load('products-cache-time');
-  
-  if (cached && cacheTime && (Date.now() - cacheTime < PRODUCTS_CONFIG.CACHE_DURATION)) {
-    productsData = cached;
-    return productsData;
-  }
-  
   try {
-    const response = await fetch(TICS.CONFIG.API_ENDPOINTS.PRODUCTS);
+    const cached = localStorage.getItem('products-cache');
+    const cacheTime = localStorage.getItem('products-cache-time');
+
+    if (cached && cacheTime && (Date.now() - parseInt(cacheTime) < PRODUCTS_CONFIG.CACHE_DURATION)) {
+      productsData = JSON.parse(cached);
+      // Export to global scope for search functionality
+      window.productsData = productsData;
+      console.log('Products loaded from cache:', productsData.length);
+      return productsData;
+    }
+  } catch (e) {
+    console.warn('Cache error:', e);
+  }
+
+  try {
+    console.log('Loading products from data/products.json...');
+    const response = await fetch('data/products.json');
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    
+
     productsData = await response.json();
-    
+
+    // Export to global scope for search functionality
+    window.productsData = productsData;
+
     // Cache the products
-    TICS.StorageManager.save('products-cache', productsData);
-    TICS.StorageManager.save('products-cache-time', Date.now());
-    
+    try {
+      localStorage.setItem('products-cache', JSON.stringify(productsData));
+      localStorage.setItem('products-cache-time', Date.now().toString());
+    } catch (e) {
+      console.warn('Could not cache products:', e);
+    }
+
+    console.log('Products loaded successfully:', productsData.length);
     return productsData;
   } catch (error) {
     console.error('Error loading products:', error);
-    TICS.ToastManager.error('Error al cargar los productos');
+    alert('Error al cargar los productos');
     return [];
   }
 }

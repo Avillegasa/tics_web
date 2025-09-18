@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Debug</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; }
+        #search-input { width: 100%; padding: 12px; font-size: 16px; margin: 10px 0; border: 2px solid #ddd; border-radius: 4px; }
+        #search-suggestions { border: 1px solid #ddd; border-radius: 4px; background: white; max-height: 300px; overflow-y: auto; }
+        .search-suggestion { padding: 10px; border-bottom: 1px solid #eee; cursor: pointer; }
+        .search-suggestion:hover { background: #f0f0f0; }
+        .debug { margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 4px; font-family: monospace; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Search Debug - Independent Test</h1>
+        <p>This test loads all scripts exactly like the main index.html page:</p>
+
+        <input type="text" id="search-input" placeholder="Type 'phone' to test..." autocomplete="off">
+        <div id="search-suggestions"></div>
+
+        <div id="debug-output" class="debug">Loading scripts...</div>
+    </div>
+
+    <!-- Load scripts in the exact same order as index.html -->
+    <script src="js/main.js"></script>
+    <script src="js/products.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/search.js"></script>
+
+    <script>
+        const debugOutput = document.getElementById('debug-output');
+
+        function log(message) {
+            console.log(message);
+            debugOutput.innerHTML += '<div>' + new Date().toLocaleTimeString() + ': ' + JSON.stringify(message) + '</div>';
+        }
+
+        // Wait for everything to load, then test
+        document.addEventListener('DOMContentLoaded', () => {
+            log('DOM loaded');
+
+            setTimeout(() => {
+                log('Testing after 2 seconds...');
+
+                // Check if TICS is available
+                log('TICS available: ' + (typeof window.TICS !== 'undefined'));
+
+                // Check if SearchManager is available
+                log('SearchManager available: ' + (typeof window.SearchManager !== 'undefined'));
+
+                // Check if ProductsManager is available
+                log('ProductsManager available: ' + (typeof window.ProductsManager !== 'undefined'));
+
+                // Check if products data is available
+                log('productsData available: ' + (typeof window.productsData !== 'undefined'));
+                log('productsData length: ' + (window.productsData ? window.productsData.length : 'N/A'));
+
+                // Try to manually load products if not loaded
+                if (!window.productsData || window.productsData.length === 0) {
+                    log('Attempting to load products...');
+                    if (window.ProductsManager && window.ProductsManager.loadProducts) {
+                        window.ProductsManager.loadProducts().then(() => {
+                            log('Products loaded via ProductsManager');
+                            log('New productsData length: ' + (window.productsData ? window.productsData.length : 'N/A'));
+                        }).catch(err => {
+                            log('Error loading via ProductsManager: ' + err.message);
+                        });
+                    }
+                }
+
+                // Test search function directly
+                if (window.SearchManager && window.SearchManager.searchProducts) {
+                    log('Testing search function...');
+                    setTimeout(() => {
+                        const results = window.SearchManager.searchProducts('phone');
+                        log('Search results for "phone": ' + results.length);
+                        if (results.length > 0) {
+                            log('First result: ' + results[0].title);
+                        }
+                    }, 3000);
+                }
+
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

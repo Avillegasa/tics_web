@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - TICS Store</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛒</text></svg>">
+</head>
+<body class="admin-body">
+    <!-- Admin Navigation -->
+    <nav class="admin-nav">
+        <div class="admin-nav-container">
+            <div class="admin-logo">
+                <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?w=40&h=40&fit=crop" alt="TICS Logo" class="logo-img">
+                <span class="logo-text">TICS Admin</span>
+            </div>
+
+            <div class="admin-nav-menu">
+                <a href="#dashboard" class="admin-nav-link active" data-section="dashboard">📊 Dashboard</a>
+                <a href="#users" class="admin-nav-link" data-section="users">👥 Usuarios</a>
+                <a href="#products" class="admin-nav-link" data-section="products">📦 Productos</a>
+                <a href="#orders" class="admin-nav-link" data-section="orders">🛒 Pedidos</a>
+            </div>
+
+            <div class="admin-user-menu">
+                <span class="admin-username" id="admin-username">Admin</span>
+                <button class="admin-logout-btn" id="logout-btn">Cerrar Sesión</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Login Form (shown when not authenticated) -->
+    <div class="admin-login-container" id="login-container">
+        <div class="admin-login-form">
+            <div class="login-header">
+                <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?w=60&h=60&fit=crop" alt="TICS Logo" class="login-logo">
+                <h2>Panel de Administración</h2>
+                <p>Inicia sesión para acceder al panel</p>
+            </div>
+
+            <form id="login-form">
+                <div class="form-group">
+                    <input type="text" id="login-username" placeholder="Usuario o Email" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="login-password" placeholder="Contraseña" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
+            </form>
+
+            <div class="login-footer">
+                <a href="index.html">← Volver a la tienda</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Content (shown when authenticated) -->
+    <main class="admin-main" id="admin-content" style="display: none;">
+
+        <!-- Dashboard Section -->
+        <section class="admin-section active" id="dashboard-section">
+            <div class="section-header">
+                <h1>Dashboard</h1>
+                <p>Resumen general del sistema</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="total-users">0</div>
+                        <div class="stat-label">Usuarios Totales</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">📦</div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="total-products">8</div>
+                        <div class="stat-label">Productos</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">🛒</div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="total-orders">0</div>
+                        <div class="stat-label">Pedidos</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="total-revenue">€0</div>
+                        <div class="stat-label">Ingresos</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Users Section -->
+        <section class="admin-section" id="users-section">
+            <div class="section-header">
+                <h1>Gestión de Usuarios</h1>
+                <button class="btn btn-primary" id="add-user-btn">+ Agregar Usuario</button>
+            </div>
+
+            <div class="table-container">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Usuario</th>
+                            <th>Email</th>
+                            <th>Nombre</th>
+                            <th>Rol</th>
+                            <th>Estado</th>
+                            <th>Fecha Registro</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-tbody">
+                        <!-- Users will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pagination" id="users-pagination">
+                <!-- Pagination will be loaded here -->
+            </div>
+        </section>
+
+        <!-- Products Section -->
+        <section class="admin-section" id="products-section">
+            <div class="section-header">
+                <h1>Gestión de Productos</h1>
+                <button class="btn btn-primary">+ Agregar Producto</button>
+            </div>
+            <div class="admin-placeholder">
+                <p>Funcionalidad de productos en desarrollo...</p>
+            </div>
+        </section>
+
+        <!-- Orders Section -->
+        <section class="admin-section" id="orders-section">
+            <div class="section-header">
+                <h1>Gestión de Pedidos</h1>
+            </div>
+            <div class="admin-placeholder">
+                <p>Funcionalidad de pedidos en desarrollo...</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- User Modal -->
+    <div class="modal" id="user-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Agregar Usuario</h3>
+                <button class="modal-close" id="modal-close">&times;</button>
+            </div>
+
+            <form id="user-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="user-username">Usuario</label>
+                        <input type="text" id="user-username" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="user-email">Email</label>
+                        <input type="email" id="user-email" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="user-password">Contraseña</label>
+                        <input type="password" id="user-password">
+                        <small class="form-help">Deja en blanco para mantener la actual (solo edición)</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="user-role">Rol</label>
+                        <select id="user-role" required>
+                            <option value="customer">Cliente</option>
+                            <option value="admin">Administrador</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="user-first-name">Nombre</label>
+                        <input type="text" id="user-first-name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="user-last-name">Apellido</label>
+                        <input type="text" id="user-last-name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="user-phone">Teléfono</label>
+                        <input type="tel" id="user-phone">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="user-city">Ciudad</label>
+                        <input type="text" id="user-city">
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="user-address">Dirección</label>
+                        <textarea id="user-address" rows="2"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="user-postal-code">Código Postal</label>
+                        <input type="text" id="user-postal-code">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="user-country">País</label>
+                        <input type="text" id="user-country">
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="cancel-btn">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="save-btn">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Loading Spinner -->
+    <div class="loading-spinner" id="loading-spinner">
+        <div class="spinner"></div>
+    </div>
+
+    <script src="js/admin.js"></script>
+</body>
+</html>
