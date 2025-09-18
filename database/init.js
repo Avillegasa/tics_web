@@ -7,7 +7,7 @@ const dbConfig = {
     port: process.env.DB_PORT || 5432,
     database: process.env.DB_NAME || 'tics_store',
     user: process.env.DB_USER || 'postgres',
-    password: process.env.DB_PASSWORD || 'postgres',
+    password: process.env.DB_PASSWORD || 'root',
     ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
     max: 20,
     idleTimeoutMillis: 30000,

@@ -149,16 +149,22 @@ class AdminPanel {
 
         this.showLoading(true);
 
+        // Debug: log what we're sending
+        console.log('Sending login data:', { login: username, password });
+
         try {
             const response = await fetch('/api/users/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ username, password })
+                body: JSON.stringify({ login: username, password })
             });
 
             const data = await response.json();
+
+            // Debug: log response
+            console.log('Login response:', response.status, data);
 
             if (response.ok) {
                 if (data.user.role !== 'admin') {
