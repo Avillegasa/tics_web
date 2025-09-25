@@ -25,6 +25,7 @@
                 <a href="#users" class="admin-nav-link" data-section="users">👥 Usuarios</a>
                 <a href="#products" class="admin-nav-link" data-section="products">📦 Productos</a>
                 <a href="#orders" class="admin-nav-link" data-section="orders">🛒 Pedidos</a>
+                <a href="#analytics" class="admin-nav-link" data-section="analytics">📈 Analytics</a>
             </div>
 
             <div class="admin-user-menu">
@@ -193,6 +194,149 @@
                 <p>Funcionalidad de pedidos en desarrollo...</p>
             </div>
         </section>
+
+        <!-- Analytics Section -->
+        <section class="admin-section" id="analytics-section">
+            <div class="section-header">
+                <h1>📈 Analytics & Métricas</h1>
+                <button class="btn btn-primary" id="refresh-analytics-btn">🔄 Actualizar</button>
+            </div>
+
+            <!-- Overview Stats -->
+            <div class="analytics-overview">
+                <div class="stat-card">
+                    <div class="stat-icon">👁️</div>
+                    <div class="stat-content">
+                        <h3 id="total-views-stat">-</h3>
+                        <p>Vistas (7 días)</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🛒</div>
+                    <div class="stat-content">
+                        <h3 id="total-cart-adds-stat">-</h3>
+                        <p>Agregados al Carrito</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🔍</div>
+                    <div class="stat-content">
+                        <h3 id="total-searches-stat">-</h3>
+                        <p>Búsquedas</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">👤</div>
+                    <div class="stat-content">
+                        <h3 id="unique-sessions-stat">-</h3>
+                        <p>Sesiones Únicas</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Tabs -->
+            <div class="analytics-tabs">
+                <button class="analytics-tab-btn active" data-tab="products">📦 Productos</button>
+                <button class="analytics-tab-btn" data-tab="searches">🔍 Búsquedas</button>
+                <button class="analytics-tab-btn" data-tab="categories">📊 Categorías</button>
+            </div>
+
+            <!-- Products Analytics -->
+            <div class="analytics-tab-content active" id="products-analytics">
+                <div class="analytics-card">
+                    <h3>🏆 Top 10 Productos Más Vistos</h3>
+                    <div class="analytics-table-container">
+                        <table class="analytics-table">
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th>Categoría</th>
+                                    <th>Vistas</th>
+                                    <th>Cart Adds</th>
+                                    <th>Conversión</th>
+                                </tr>
+                            </thead>
+                            <tbody id="top-products-tbody">
+                                <tr>
+                                    <td colspan="5" class="loading-cell">Cargando datos...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Searches Analytics -->
+            <div class="analytics-tab-content" id="searches-analytics">
+                <div class="analytics-card">
+                    <h3>🔍 Búsquedas Más Populares</h3>
+                    <div class="analytics-table-container">
+                        <table class="analytics-table">
+                            <thead>
+                                <tr>
+                                    <th>Búsqueda</th>
+                                    <th>Frecuencia</th>
+                                    <th>Resultados</th>
+                                    <th>Última Búsqueda</th>
+                                </tr>
+                            </thead>
+                            <tbody id="top-searches-tbody">
+                                <tr>
+                                    <td colspan="4" class="loading-cell">Cargando datos...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="analytics-card">
+                    <h3>⚠️ Búsquedas Sin Resultados</h3>
+                    <div class="analytics-table-container">
+                        <table class="analytics-table">
+                            <thead>
+                                <tr>
+                                    <th>Búsqueda</th>
+                                    <th>Frecuencia</th>
+                                    <th>Última Búsqueda</th>
+                                    <th>Oportunidad</th>
+                                </tr>
+                            </thead>
+                            <tbody id="empty-searches-tbody">
+                                <tr>
+                                    <td colspan="4" class="loading-cell">Cargando datos...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categories Analytics -->
+            <div class="analytics-tab-content" id="categories-analytics">
+                <div class="analytics-card">
+                    <h3>📊 Rendimiento por Categorías</h3>
+                    <div class="analytics-table-container">
+                        <table class="analytics-table">
+                            <thead>
+                                <tr>
+                                    <th>Categoría</th>
+                                    <th>Productos</th>
+                                    <th>Vistas Totales</th>
+                                    <th>Cart Adds</th>
+                                    <th>Conversión Promedio</th>
+                                </tr>
+                            </thead>
+                            <tbody id="categories-tbody">
+                                <tr>
+                                    <td colspan="5" class="loading-cell">Cargando datos...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
     </main>
 
     <!-- User Modal -->

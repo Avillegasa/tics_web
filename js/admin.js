@@ -89,6 +89,9 @@ class AdminPanel {
         // Image upload functionality
         this.setupImageUpload();
 
+        // Analytics functionality
+        this.setupAnalytics();
+
         // Product search and filters
         document.getElementById('product-search').addEventListener('input', (e) => {
             this.debounce(() => this.filterProducts(), 300);
@@ -101,6 +104,7 @@ class AdminPanel {
         document.getElementById('product-status-filter').addEventListener('change', () => {
             this.filterProducts();
         });
+
     }
 
     checkAuthentication() {
@@ -230,6 +234,8 @@ class AdminPanel {
             this.loadUsers();
         } else if (sectionName === 'products') {
             this.loadProducts();
+        } else if (sectionName === 'analytics') {
+            this.loadAnalytics();
         }
     }
 
@@ -1136,6 +1142,204 @@ class AdminPanel {
             throw error;
         }
     }
+
+    // ================================================
+    // ANALYTICS METHODS
+    // ================================================
+
+    setupAnalytics() {
+        // Refresh analytics button
+        const refreshBtn = document.getElementById('refresh-analytics-btn');
+        if (refreshBtn) {
+            refreshBtn.addEventListener('click', () => {
+                this.loadAnalytics();
+            });
+        }
+
+        // Analytics tabs
+        document.querySelectorAll('.analytics-tab-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                // Remove active from all tabs and contents
+                document.querySelectorAll('.analytics-tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.analytics-tab-content').forEach(c => c.classList.remove('active'));
+
+                // Add active to clicked tab and corresponding content
+                e.target.classList.add('active');
+                const tabName = e.target.dataset.tab;
+                document.getElementById(`${tabName}-analytics`).classList.add('active');
+            });
+        });
+    }
+
+    async loadAnalytics() {
+        try {
+            this.showLoading(true);
+
+            const token = localStorage.getItem('admin_token');
+            const response = await fetch('/api/analytics/dashboard', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                this.renderAnalyticsDashboard(data.data);
+                this.showSuccess('Analytics actualizados');
+            } else {
+                const errorData = await response.json();
+                this.showError('Error cargando analytics: ' + (errorData.error || 'Error desconocido'));
+            }
+
+        } catch (error) {
+            console.error('Error loading analytics:', error);
+            this.showError('Error de conexión al cargar analytics');
+        } finally {
+            this.showLoading(false);
+        }
+    }
+
+    renderAnalyticsDashboard(data) {
+        // Update overview stats
+        if (data.overallStats && data.overallStats.length > 0) {
+            const stats = data.overallStats[0];
+            document.getElementById('total-views-stat').textContent = stats.total_product_views || '0';
+            document.getElementById('total-cart-adds-stat').textContent = stats.total_cart_adds || '0';
+            document.getElementById('total-searches-stat').textContent = stats.total_searches || '0';
+            document.getElementById('unique-sessions-stat').textContent = stats.unique_sessions || '0';
+        }
+
+        // Render top products
+        this.renderTopProducts(data.topProductsByViews || []);
+
+        // Render search analytics
+        this.renderSearchAnalytics(data.topSearches || [], data.emptySearches || []);
+
+        // Render category stats
+        this.renderCategoryStats(data.categoryStats || []);
+
+        console.log('Analytics dashboard rendered successfully');
+    }
+
+    renderTopProducts(products) {
+        const tbody = document.getElementById('top-products-tbody');
+        if (!tbody) return;
+
+        if (products.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="loading-cell">No hay datos disponibles</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = products.map(product => {
+            const conversionRate = parseFloat(product.conversion_rate || 0);
+            let conversionClass = 'low';
+            if (conversionRate >= 10) conversionClass = 'high';
+            else if (conversionRate >= 5) conversionClass = 'medium';
+
+            return `
+                <tr>
+                    <td>
+                        <strong>${this.escapeHtml(product.title)}</strong>
+                    </td>
+                    <td>${this.escapeHtml(product.category || 'Sin categoría')}</td>
+                    <td><strong>${product.total_views || 0}</strong></td>
+                    <td>${product.total_cart_adds || 0}</td>
+                    <td class="conversion-rate ${conversionClass}">
+                        ${conversionRate.toFixed(1)}%
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    renderSearchAnalytics(topSearches, emptySearches) {
+        // Top searches
+        const topSearchesTbody = document.getElementById('top-searches-tbody');
+        if (topSearchesTbody) {
+            if (topSearches.length === 0) {
+                topSearchesTbody.innerHTML = '<tr><td colspan="4" class="loading-cell">No hay búsquedas registradas</td></tr>';
+            } else {
+                topSearchesTbody.innerHTML = topSearches.map(search => `
+                    <tr>
+                        <td><strong>${this.escapeHtml(search.query)}</strong></td>
+                        <td>${search.total_searches}</td>
+                        <td>${search.results_count || 'N/A'}</td>
+                        <td class="analytics-date">${this.formatDate(search.last_searched_at)}</td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        // Empty searches (opportunities)
+        const emptySearchesTbody = document.getElementById('empty-searches-tbody');
+        if (emptySearchesTbody) {
+            if (emptySearches.length === 0) {
+                emptySearchesTbody.innerHTML = '<tr><td colspan="4" class="loading-cell">No hay búsquedas sin resultados</td></tr>';
+            } else {
+                emptySearchesTbody.innerHTML = emptySearches.map(search => `
+                    <tr>
+                        <td><strong>${this.escapeHtml(search.query)}</strong></td>
+                        <td>${search.total_searches}</td>
+                        <td class="analytics-date">${this.formatDate(search.last_searched_at)}</td>
+                        <td><span class="opportunity-badge">Agregar productos</span></td>
+                    </tr>
+                `).join('');
+            }
+        }
+    }
+
+    renderCategoryStats(categories) {
+        const tbody = document.getElementById('categories-tbody');
+        if (!tbody) return;
+
+        if (categories.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="loading-cell">No hay datos por categorías</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = categories.map(category => {
+            const conversionRate = parseFloat(category.avg_conversion_rate || 0);
+            let conversionClass = 'low';
+            if (conversionRate >= 10) conversionClass = 'high';
+            else if (conversionRate >= 5) conversionClass = 'medium';
+
+            return `
+                <tr>
+                    <td><strong>${this.escapeHtml(category.category)}</strong></td>
+                    <td>${category.products_count}</td>
+                    <td>${category.total_views || 0}</td>
+                    <td>${category.total_cart_adds || 0}</td>
+                    <td class="conversion-rate ${conversionClass}">
+                        ${conversionRate.toFixed(1)}%
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    formatDate(dateString) {
+        if (!dateString) return 'N/A';
+
+        try {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMinutes = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMinutes / 60);
+            const diffDays = Math.floor(diffHours / 24);
+
+            if (diffMinutes < 1) return 'Hace un momento';
+            if (diffMinutes < 60) return `Hace ${diffMinutes}min`;
+            if (diffHours < 24) return `Hace ${diffHours}h`;
+            if (diffDays < 7) return `Hace ${diffDays}d`;
+
+            return date.toLocaleDateString('es-ES');
+        } catch (e) {
+            return 'N/A';
+        }
+    }
+
 }
 
 // Initialize admin panel

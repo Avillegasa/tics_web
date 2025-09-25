@@ -43,6 +43,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/users', require('./routes/users'));
 app.use('/api/products', require('./routes/products'));
 app.use('/api/images', require('./routes/images'));
+app.use('/api/analytics', require('./routes/analytics'));
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

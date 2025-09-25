@@ -163,6 +163,12 @@ const initDatabase = async () => {
 
         console.log('✅ Database triggers created');
 
+        // Create analytics tables
+        const fs = require('fs');
+        const analyticsSchema = fs.readFileSync('./database/analytics-schema.sql', 'utf8');
+        await client.query(analyticsSchema);
+        console.log('✅ Analytics tables and triggers created');
+
         // Create default admin user
         await createDefaultAdmin(client);
 
