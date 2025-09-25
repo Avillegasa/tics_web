@@ -324,9 +324,17 @@
                     </div>
 
                     <div class="form-group full-width">
-                        <label for="product-images">URLs de Imágenes (una por línea)</label>
-                        <textarea id="product-images" rows="3" placeholder="https://example.com/image1.jpg
-https://example.com/image2.jpg"></textarea>
+                        <label for="product-images">Imágenes del Producto</label>
+                        <div class="image-upload-section">
+                            <input type="file" id="product-images" accept="image/*" multiple style="display: none;">
+                            <button type="button" class="btn btn-outline" id="select-images-btn">
+                                📷 Seleccionar Imágenes (Máx. 5)
+                            </button>
+                            <div class="image-preview-container" id="image-preview-container">
+                                <!-- Preview images will appear here -->
+                            </div>
+                            <small class="form-help">Formatos permitidos: JPG, PNG, WebP, SVG. Tamaño máximo: 5MB por imagen.</small>
+                        </div>
                     </div>
 
                     <div class="form-group full-width">

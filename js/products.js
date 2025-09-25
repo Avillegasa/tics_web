@@ -94,21 +94,11 @@ async function loadProducts() {
     console.log('Products loaded successfully:', productsData.length);
     return productsData;
   } catch (error) {
-    console.error('Error loading products:', error);
-    // Fallback to JSON file
-    try {
-      console.log('Falling back to JSON file...');
-      const response = await fetch('/data/products.json');
-      if (response.ok) {
-        productsData = await response.json();
-        window.productsData = productsData;
-        console.log('Products loaded from JSON fallback:', productsData.length);
-        return productsData;
-      }
-    } catch (fallbackError) {
-      console.error('Fallback also failed:', fallbackError);
-    }
-    alert('Error al cargar los productos');
+    console.error('Error loading products from API:', error);
+    console.error('No se pudo conectar con la base de datos');
+    // No fallback - force database consistency
+    productsData = [];
+    window.productsData = productsData;
     return [];
   }
 }

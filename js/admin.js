@@ -86,6 +86,9 @@ class AdminPanel {
             }
         });
 
+        // Image upload functionality
+        this.setupImageUpload();
+
         // Product search and filters
         document.getElementById('product-search').addEventListener('input', (e) => {
             this.debounce(() => this.filterProducts(), 300);
@@ -695,6 +698,11 @@ class AdminPanel {
         document.getElementById('product-modal').style.display = 'none';
         document.getElementById('product-form').reset();
         this.currentEditProductId = null;
+
+        // Reset image upload state
+        this.selectedImages = [];
+        this.uploadedImages = [];
+        this.renderImagePreviews();
     }
 
     populateProductForm(product) {
@@ -707,9 +715,11 @@ class AdminPanel {
         document.getElementById('product-rating').value = product.rating || 0;
         document.getElementById('product-description').value = product.description || '';
 
-        // Handle images array
+        // Handle images array - set for editing
         if (product.images && Array.isArray(product.images)) {
-            document.getElementById('product-images').value = product.images.join('\n');
+            this.uploadedImages = [...product.images];
+            this.selectedImages = [];
+            this.renderImagePreviews();
         }
 
         // Handle tags array
@@ -725,6 +735,8 @@ class AdminPanel {
 
     async handleProductSubmit() {
         try {
+            this.showLoading(true);
+
             const formData = this.getProductFormData();
 
             // Validation
@@ -755,6 +767,40 @@ class AdminPanel {
                 formData.attributes = {};
             }
 
+            // Upload images first
+            let imagePaths = [];
+            try {
+                imagePaths = await this.uploadImages();
+                if (imagePaths.length === 0) {
+                    // Use placeholder if no images
+                    const ImageHelper = {
+                        getPlaceholderForCategory: (category) => {
+                            const placeholders = {
+                                'smartphones': '/images/products/smartphone-placeholder.svg',
+                                'smartphone': '/images/products/smartphone-placeholder.svg',
+                                'laptops': '/images/products/laptop-placeholder.svg',
+                                'laptop': '/images/products/laptop-placeholder.svg',
+                                'tablets': '/images/products/tablet-placeholder.svg',
+                                'tablet': '/images/products/tablet-placeholder.svg',
+                                'audio': '/images/products/audio-placeholder.svg',
+                                'cámaras': '/images/products/camera-placeholder.svg',
+                                'camera': '/images/products/camera-placeholder.svg'
+                            };
+                            const normalized = category?.toLowerCase().trim() || '';
+                            return placeholders[normalized] || '/images/products/default-placeholder.svg';
+                        }
+                    };
+                    imagePaths = [ImageHelper.getPlaceholderForCategory(formData.category)];
+                }
+            } catch (uploadError) {
+                console.error('Error uploading images:', uploadError);
+                this.showError('Error subiendo imágenes: ' + uploadError.message);
+                return;
+            }
+
+            // Add images to form data
+            formData.images = imagePaths;
+
             const token = localStorage.getItem('admin_token');
             const url = this.currentEditProductId
                 ? `/api/products/${this.currentEditProductId}`
@@ -784,6 +830,8 @@ class AdminPanel {
         } catch (error) {
             console.error('Error submitting product:', error);
             this.showError('Error al guardar producto');
+        } finally {
+            this.showLoading(false);
         }
     }
 
@@ -799,9 +847,8 @@ class AdminPanel {
             description: document.getElementById('product-description').value.trim()
         };
 
-        // Process images
-        const imagesText = document.getElementById('product-images').value.trim();
-        formData.images = imagesText ? imagesText.split('\n').map(url => url.trim()).filter(url => url) : [];
+        // Images will be handled separately by uploadImages() method
+        // formData.images will be set in handleProductSubmit()
 
         // Process tags
         const tagsText = document.getElementById('product-tags').value.trim();
@@ -918,6 +965,175 @@ class AdminPanel {
             console.log('Products cache cleared');
         } catch (error) {
             console.warn('Could not clear products cache:', error);
+        }
+    }
+
+    // Setup image upload functionality
+    setupImageUpload() {
+        this.selectedImages = [];
+        this.uploadedImages = [];
+
+        const selectBtn = document.getElementById('select-images-btn');
+        const fileInput = document.getElementById('product-images');
+        const uploadSection = document.querySelector('.image-upload-section');
+
+        // Click to select files
+        selectBtn.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        // Handle file selection
+        fileInput.addEventListener('change', (e) => {
+            this.handleImageSelection(e.target.files);
+        });
+
+        // Drag and drop functionality
+        uploadSection.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadSection.classList.add('dragover');
+        });
+
+        uploadSection.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            uploadSection.classList.remove('dragover');
+        });
+
+        uploadSection.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadSection.classList.remove('dragover');
+            this.handleImageSelection(e.dataTransfer.files);
+        });
+    }
+
+    // Handle image file selection
+    handleImageSelection(files) {
+        const maxFiles = 5;
+        const maxSize = 5 * 1024 * 1024; // 5MB
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/svg+xml'];
+
+        if (files.length > maxFiles) {
+            this.showError(`Máximo ${maxFiles} imágenes permitidas`);
+            return;
+        }
+
+        if (this.selectedImages.length + files.length > maxFiles) {
+            this.showError(`No puedes agregar más de ${maxFiles} imágenes en total`);
+            return;
+        }
+
+        Array.from(files).forEach(file => {
+            // Validate file type
+            if (!allowedTypes.includes(file.type)) {
+                this.showError(`Archivo ${file.name} no es un tipo de imagen válido`);
+                return;
+            }
+
+            // Validate file size
+            if (file.size > maxSize) {
+                this.showError(`Archivo ${file.name} es demasiado grande (máx. 5MB)`);
+                return;
+            }
+
+            this.selectedImages.push(file);
+        });
+
+        this.renderImagePreviews();
+    }
+
+    // Render image previews
+    renderImagePreviews() {
+        const container = document.getElementById('image-preview-container');
+        container.innerHTML = '';
+
+        this.selectedImages.forEach((file, index) => {
+            const preview = document.createElement('div');
+            preview.className = 'image-preview-item';
+
+            const img = document.createElement('img');
+            img.src = URL.createObjectURL(file);
+            img.alt = file.name;
+
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'image-preview-remove';
+            removeBtn.innerHTML = '×';
+            removeBtn.title = 'Eliminar imagen';
+            removeBtn.addEventListener('click', () => {
+                this.removeImagePreview(index);
+            });
+
+            preview.appendChild(img);
+            preview.appendChild(removeBtn);
+            container.appendChild(preview);
+        });
+
+        // Show uploaded images if editing
+        this.uploadedImages.forEach((imagePath, index) => {
+            const preview = document.createElement('div');
+            preview.className = 'image-preview-item';
+
+            const img = document.createElement('img');
+            img.src = imagePath;
+            img.alt = 'Imagen existente';
+
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'image-preview-remove';
+            removeBtn.innerHTML = '×';
+            removeBtn.title = 'Eliminar imagen';
+            removeBtn.addEventListener('click', () => {
+                this.removeUploadedImage(index);
+            });
+
+            preview.appendChild(img);
+            preview.appendChild(removeBtn);
+            container.appendChild(preview);
+        });
+    }
+
+    // Remove image preview
+    removeImagePreview(index) {
+        this.selectedImages.splice(index, 1);
+        this.renderImagePreviews();
+    }
+
+    // Remove uploaded image
+    removeUploadedImage(index) {
+        this.uploadedImages.splice(index, 1);
+        this.renderImagePreviews();
+    }
+
+    // Upload images to server
+    async uploadImages() {
+        if (this.selectedImages.length === 0) {
+            return this.uploadedImages; // Return existing images if no new ones
+        }
+
+        try {
+            const formData = new FormData();
+            this.selectedImages.forEach(file => {
+                formData.append('images', file);
+            });
+
+            const token = localStorage.getItem('admin_token');
+            const response = await fetch('/api/images/upload-multiple', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                const newImagePaths = data.images.map(img => img.path);
+                return [...this.uploadedImages, ...newImagePaths];
+            } else {
+                throw new Error(data.error || 'Error subiendo imágenes');
+            }
+
+        } catch (error) {
+            console.error('Error uploading images:', error);
+            throw error;
         }
     }
 }
