@@ -45,6 +45,7 @@ class AnalyticsController {
                 ip_address
             ]);
 
+
             res.json({
                 success: true,
                 event_id: result.rows[0].id,
@@ -140,7 +141,7 @@ class AnalyticsController {
                         COUNT(*) as count,
                         MAX(created_at) as last_event
                     FROM analytics_events
-                    WHERE created_at >= datetime('now', '-24 hours')
+                    WHERE created_at >= NOW() - INTERVAL '24 hours'
                     GROUP BY event_type
                     ORDER BY count DESC
                 `,
@@ -153,7 +154,7 @@ class AnalyticsController {
                         COUNT(CASE WHEN event_type = 'search' THEN 1 END) as total_searches,
                         COUNT(DISTINCT session_id) as unique_sessions
                     FROM analytics_events
-                    WHERE created_at >= datetime('now', '-7 days')
+                    WHERE created_at >= NOW() - INTERVAL '7 days'
                 `
             };
 
@@ -246,11 +247,11 @@ class AnalyticsController {
         try {
             const { period = '7d' } = req.query;
 
-            let timeFilter = "WHERE created_at >= datetime('now', '-7 days')";
+            let timeFilter = "WHERE created_at >= NOW() - INTERVAL '7 days'";
             if (period === '30d') {
-                timeFilter = "WHERE created_at >= datetime('now', '-30 days')";
+                timeFilter = "WHERE created_at >= NOW() - INTERVAL '30 days'";
             } else if (period === '24h') {
-                timeFilter = "WHERE created_at >= datetime('now', '-24 hours')";
+                timeFilter = "WHERE created_at >= NOW() - INTERVAL '24 hours'";
             }
 
             const searchStatsQuery = `
@@ -282,6 +283,7 @@ class AnalyticsController {
             });
         }
     }
+
 }
 
 module.exports = AnalyticsController;

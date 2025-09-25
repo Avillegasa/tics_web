@@ -16,6 +16,15 @@ const initDatabase = async () => {
         console.log('✅ Using PostgreSQL database');
         return;
     } catch (error) {
+        // Check if it's just a trigger error (which is acceptable)
+        if (error.message && error.message.includes('already exists')) {
+            console.log('⚠️  Some database objects already exist, continuing...');
+            dbType = 'postgresql';
+            queryFunction = postgresInit.query;
+            console.log('✅ Using PostgreSQL database');
+            return;
+        }
+
         console.log('⚠️  PostgreSQL connection failed, falling back to SQLite...');
         console.log('Error details:', error.message);
 

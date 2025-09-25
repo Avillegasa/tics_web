@@ -94,6 +94,49 @@ const createTables = async () => {
             )
         `;
 
+        // Analytics tables for SQLite
+        const createAnalyticsEventsTable = `
+            CREATE TABLE IF NOT EXISTS analytics_events (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                event_type TEXT NOT NULL,
+                product_id INTEGER,
+                category TEXT,
+                search_query TEXT,
+                filter_data TEXT,
+                session_id TEXT,
+                user_agent TEXT,
+                ip_address TEXT,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (product_id) REFERENCES products (id) ON DELETE SET NULL
+            )
+        `;
+
+        const createProductMetricsTable = `
+            CREATE TABLE IF NOT EXISTS product_metrics (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                product_id INTEGER NOT NULL,
+                total_views INTEGER DEFAULT 0,
+                total_cart_adds INTEGER DEFAULT 0,
+                last_viewed_at DATETIME,
+                conversion_rate REAL DEFAULT 0.00,
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (product_id) REFERENCES products (id) ON DELETE CASCADE,
+                UNIQUE(product_id)
+            )
+        `;
+
+        const createSearchAnalyticsTable = `
+            CREATE TABLE IF NOT EXISTS search_analytics (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                query TEXT NOT NULL,
+                results_count INTEGER DEFAULT 0,
+                click_through_rate REAL DEFAULT 0.00,
+                total_searches INTEGER DEFAULT 1,
+                last_searched_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(query)
+            )
+        `;
+
         db.serialize(() => {
             db.run(createUsersTable, (err) => {
                 if (err) reject(err);
@@ -114,6 +157,35 @@ const createTables = async () => {
                 if (err) reject(err);
                 else console.log('✅ Order items table created or already exists');
             });
+
+            // Create analytics tables
+            db.run(createAnalyticsEventsTable, (err) => {
+                if (err) reject(err);
+                else console.log('✅ Analytics events table created or already exists');
+            });
+
+            db.run(createProductMetricsTable, (err) => {
+                if (err) reject(err);
+                else console.log('✅ Product metrics table created or already exists');
+            });
+
+            db.run(createSearchAnalyticsTable, (err) => {
+                if (err) reject(err);
+                else console.log('✅ Search analytics table created or already exists');
+            });
+
+            // Create indexes for performance
+            db.run(`CREATE INDEX IF NOT EXISTS idx_analytics_events_type ON analytics_events(event_type)`, (err) => {
+                if (err) console.log('Index creation warning:', err.message);
+            });
+            db.run(`CREATE INDEX IF NOT EXISTS idx_analytics_events_product ON analytics_events(product_id)`, (err) => {
+                if (err) console.log('Index creation warning:', err.message);
+            });
+            db.run(`CREATE INDEX IF NOT EXISTS idx_analytics_events_created ON analytics_events(created_at)`, (err) => {
+                if (err) console.log('Index creation warning:', err.message);
+            });
+
+            console.log('✅ Analytics indexes created');
 
             // Create default admin user
             createDefaultAdmin().then(() => {
