@@ -725,3 +725,7 @@ window.ProductsManager = {
   clearAllFilters,
   applyFiltersAndSort
 };
+
+// Export key functions to global scope for compatibility
+window.searchProductsAPI = searchProductsAPI;
+window.renderProductsGrid = renderProductsGrid;

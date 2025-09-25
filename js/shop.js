@@ -162,11 +162,10 @@ function initURLParameters() {
     handleCategoryParameter(categoryParam);
   }
   
-  // Handle search parameter (handled by search.js)
+  // Handle search parameter
   const searchParam = TICS.getQueryParam('search');
   if (searchParam) {
-    // Update page title
-    updatePageTitleForSearch(searchParam);
+    handleSearchParameter(searchParam);
   }
 }
 
@@ -219,17 +218,114 @@ function selectCategoryFilter(category) {
 }
 
 /**
- * Update page title for search results
+ * Handle search URL parameter
+ * @param {string} searchTerm - Search term from URL
+ */
+async function handleSearchParameter(searchTerm) {
+  const decodedTerm = decodeURIComponent(searchTerm);
+
+  try {
+    console.log('Performing search for:', decodedTerm);
+
+    // Update page title immediately
+    updatePageTitleForSearch(decodedTerm);
+
+    // Update search input if it exists
+    const searchInput = document.getElementById('search-input');
+    if (searchInput) {
+      searchInput.value = decodedTerm;
+    }
+
+    // Wait for ProductsManager to be available
+    await waitForProductsManager();
+
+    // Perform search
+    const searchResults = await window.searchProductsAPI(decodedTerm);
+
+    console.log('Search results:', searchResults);
+
+    if (searchResults.length === 0) {
+      showNoResultsMessage(decodedTerm);
+    } else {
+      // Display search results
+      window.renderProductsGrid(searchResults);
+    }
+
+  } catch (error) {
+    console.error('Error performing search:', error);
+    showSearchErrorMessage();
+  }
+}
+
+/**
+ * Wait for ProductsManager to be available
+ */
+async function waitForProductsManager(maxAttempts = 50) {
+  let attempts = 0;
+
+  while (attempts < maxAttempts) {
+    if (window.searchProductsAPI && window.renderProductsGrid) {
+      console.log('ProductsManager functions available');
+      return;
+    }
+
+    console.log('Waiting for ProductsManager... attempt', attempts + 1);
+    await new Promise(resolve => setTimeout(resolve, 100));
+    attempts++;
+  }
+
+  throw new Error('ProductsManager functions not available after timeout');
+}
+
+/**
+ * Show no results message
  * @param {string} searchTerm - Search term
  */
+function showNoResultsMessage(searchTerm) {
+  const container = document.querySelector('.products-container') || document.querySelector('.products-grid');
+
+  if (container) {
+    container.innerHTML = `
+      <div class="no-results">
+        <div class="no-results-icon">🔍</div>
+        <h3>No encontramos resultados para "${searchTerm}"</h3>
+        <p>Intenta con otros términos de búsqueda o navega por nuestras categorías</p>
+        <button class="btn btn-primary" onclick="window.location.href='shop.html'">
+          Ver todos los productos
+        </button>
+      </div>
+    `;
+  }
+}
+
+/**
+ * Show search error message
+ */
+function showSearchErrorMessage() {
+  const container = document.querySelector('.products-container') || document.querySelector('.products-grid');
+
+  if (container) {
+    container.innerHTML = `
+      <div class="search-error">
+        <div class="error-icon">⚠️</div>
+        <h3>Error en la búsqueda</h3>
+        <p>Ocurrió un problema al realizar la búsqueda. Por favor intenta nuevamente.</p>
+        <button class="btn btn-primary" onclick="window.location.reload()">
+          Reintentar
+        </button>
+      </div>
+    `;
+  }
+}
+
 function updatePageTitleForSearch(searchTerm) {
   const pageTitle = document.querySelector('.page-title');
   const pageSubtitle = document.querySelector('.page-subtitle');
-  
+
   if (pageTitle) {
-    pageTitle.textContent = `Resultados para "${decodeURIComponent(searchTerm)}"`;
+    pageTitle.textContent = `Resultados para "${searchTerm}"`;
   }
-  
+
   if (pageSubtitle) {
     pageSubtitle.textContent = 'Encuentra los productos que buscas';
   }
@@ -624,8 +720,11 @@ function initShopPage() {
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
   // Check if we're on the shop page
-  if (window.location.pathname.includes('shop.html') || 
+  if (window.location.pathname.includes('shop.html') ||
       document.getElementById('shop-sidebar')) {
     initShopPage();
   }
 });
+
+// Export functions for search.js to use
+window.handleSearchParameter = handleSearchParameter;

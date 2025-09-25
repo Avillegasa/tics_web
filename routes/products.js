@@ -52,6 +52,7 @@ const productValidation = [
 // Public routes
 router.get('/', ProductController.getAllProducts);
 router.get('/search', ProductController.searchProducts);
+router.get('/search/suggestions', ProductController.getSearchSuggestions);
 router.get('/featured', ProductController.getFeaturedProducts);
 router.get('/categories', ProductController.getCategories);
 router.get('/:id', ProductController.getProductById);

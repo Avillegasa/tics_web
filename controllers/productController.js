@@ -192,43 +192,140 @@ class ProductController {
 
     static async searchProducts(req, res) {
         try {
-            const { q: searchQuery, limit = 20 } = req.query;
+            const { q: searchQuery, limit = 20, category, minPrice, maxPrice } = req.query;
 
             if (!searchQuery || searchQuery.trim() === '') {
                 return ProductController.getAllProducts(req, res);
             }
 
-            const searchTerm = `%${searchQuery.toLowerCase()}%`;
+            const searchTerms = searchQuery.toLowerCase().trim().split(/\s+/);
+            const searchPattern = `%${searchQuery.toLowerCase()}%`;
 
-            const queryText = `
-                SELECT * FROM products
+            let queryText = `
+                SELECT *,
+                    (CASE
+                        WHEN LOWER(title) LIKE $1 THEN 10
+                        WHEN LOWER(sku) LIKE $1 THEN 9
+                        WHEN LOWER(category) LIKE $1 THEN 8
+                        WHEN LOWER(description) LIKE $1 THEN 7
+                        WHEN LOWER(CAST(tags AS TEXT)) LIKE $1 THEN 6
+                        ELSE 0
+                    END) as relevance_score
+                FROM products
                 WHERE is_active = true
                 AND (
                     LOWER(title) LIKE $1 OR
                     LOWER(description) LIKE $1 OR
                     LOWER(category) LIKE $1 OR
-                    LOWER(sku) LIKE $1
+                    LOWER(sku) LIKE $1 OR
+                    LOWER(CAST(tags AS TEXT)) LIKE $1
                 )
-                ORDER BY
-                    CASE
-                        WHEN LOWER(title) LIKE $1 THEN 1
-                        WHEN LOWER(description) LIKE $1 THEN 2
-                        WHEN LOWER(category) LIKE $1 THEN 3
-                        ELSE 4
-                    END,
-                    rating DESC
-                LIMIT $2
             `;
 
-            const result = await query(queryText, [searchTerm, parseInt(limit)]);
+            const params = [searchPattern];
+            let paramCount = 1;
+
+            // Additional filters
+            if (category && category !== 'all') {
+                paramCount++;
+                queryText += ` AND category = $${paramCount}`;
+                params.push(category);
+            }
+
+            if (minPrice) {
+                paramCount++;
+                queryText += ` AND COALESCE(sale_price, price) >= $${paramCount}`;
+                params.push(parseFloat(minPrice));
+            }
+
+            if (maxPrice) {
+                paramCount++;
+                queryText += ` AND COALESCE(sale_price, price) <= $${paramCount}`;
+                params.push(parseFloat(maxPrice));
+            }
+
+            queryText += `
+                ORDER BY relevance_score DESC, rating DESC,
+                    (CASE WHEN sale_price IS NOT NULL THEN 1 ELSE 0 END) DESC
+                LIMIT $${paramCount + 1}
+            `;
+            params.push(parseInt(limit));
+
+            const result = await query(queryText, params);
 
             res.json({
                 success: true,
                 products: result.rows,
-                total: result.rows.length
+                total: result.rows.length,
+                query: searchQuery
             });
         } catch (error) {
             console.error('Error in searchProducts:', error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    }
+
+    static async getSearchSuggestions(req, res) {
+        try {
+            const { q: searchQuery, limit = 5 } = req.query;
+
+            if (!searchQuery || searchQuery.trim().length < 2) {
+                return res.json({
+                    success: true,
+                    suggestions: []
+                });
+            }
+
+            const searchPattern = `%${searchQuery.toLowerCase()}%`;
+
+            const queryText = `
+                SELECT id, title, category, price, sale_price, images, rating,
+                    (CASE
+                        WHEN LOWER(title) LIKE $1 THEN 10
+                        WHEN LOWER(sku) LIKE $1 THEN 9
+                        WHEN LOWER(category) LIKE $1 THEN 8
+                        ELSE 5
+                    END) as relevance_score
+                FROM products
+                WHERE is_active = true
+                AND (
+                    LOWER(title) LIKE $1 OR
+                    LOWER(category) LIKE $1 OR
+                    LOWER(sku) LIKE $1
+                )
+                ORDER BY relevance_score DESC, rating DESC
+                LIMIT $2
+            `;
+
+            const result = await query(queryText, [searchPattern, parseInt(limit)]);
+
+            const suggestions = result.rows.map(product => {
+                let image = null;
+                try {
+                    if (product.images && typeof product.images === 'string') {
+                        const images = JSON.parse(product.images);
+                        image = Array.isArray(images) && images.length > 0 ? images[0] : null;
+                    }
+                } catch (e) {
+                    console.warn('Error parsing images for product', product.id);
+                }
+
+                return {
+                    id: product.id,
+                    title: product.title,
+                    category: product.category,
+                    price: product.sale_price || product.price,
+                    image: image,
+                    type: 'product'
+                };
+            });
+
+            res.json({
+                success: true,
+                suggestions
+            });
+        } catch (error) {
+            console.error('Error in getSearchSuggestions:', error);
             res.status(500).json({ error: 'Internal server error' });
         }
     }
