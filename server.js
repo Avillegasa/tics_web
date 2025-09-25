@@ -9,6 +9,9 @@ const { initDatabase } = require('./database/hybrid-init');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Trust proxy for deployment platforms (Render, Heroku, etc.)
+app.set('trust proxy', 1);
+
 // Security middleware
 app.use(helmet({
     contentSecurityPolicy: false, // Disable for development
