@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <rect width="400" height="400" fill="#f8f9fa"/>
+  <rect x="80" y="40" width="240" height="320" rx="20" fill="#343a40" stroke="#6c757d" stroke-width="2"/>
+  <rect x="90" y="60" width="220" height="280" rx="10" fill="#495057"/>
+  <circle cx="200" cy="70" r="3" fill="#adb5bd"/>
+  <rect x="170" y="65" width="60" height="10" rx="5" fill="#adb5bd"/>
+  <circle cx="200" cy="330" r="20" fill="#6c757d"/>
+  <text x="200" y="200" text-anchor="middle" fill="#adb5bd" font-family="Arial, sans-serif" font-size="16">Smartphone</text>
+  <text x="200" y="220" text-anchor="middle" fill="#6c757d" font-family="Arial, sans-serif" font-size="12">Imagen no disponible</text>
+</svg>

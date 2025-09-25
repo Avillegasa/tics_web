@@ -1,5 +1,6 @@
 const { query } = require('../database/hybrid-init');
 const { validationResult } = require('express-validator');
+const ImageHelper = require('../utils/imageHelper');
 
 class ProductController {
     static async getAllProducts(req, res) {
