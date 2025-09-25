@@ -63,6 +63,33 @@ class AnalyticsController {
     // Get analytics dashboard data
     static async getDashboard(req, res) {
         try {
+            // First, check if we have any data
+            const checkDataQuery = 'SELECT COUNT(*) as count FROM analytics_events';
+            const dataCheck = await query(checkDataQuery);
+            const hasData = dataCheck.rows[0].count > 0;
+
+            if (!hasData) {
+                // Return empty data structure if no analytics data exists yet
+                return res.json({
+                    success: true,
+                    data: {
+                        topProductsByViews: [],
+                        topSearches: [],
+                        emptySearches: [],
+                        categoryStats: [],
+                        recentActivity: [],
+                        overallStats: [{
+                            total_product_views: 0,
+                            total_cart_adds: 0,
+                            total_searches: 0,
+                            unique_sessions: 0
+                        }]
+                    },
+                    generated_at: new Date().toISOString(),
+                    message: 'No analytics data available yet'
+                });
+            }
+
             const queries = {
                 // Top products by views
                 topProductsByViews: `
@@ -113,7 +140,7 @@ class AnalyticsController {
                         COUNT(*) as count,
                         MAX(created_at) as last_event
                     FROM analytics_events
-                    WHERE created_at >= NOW() - INTERVAL '24 hours'
+                    WHERE created_at >= datetime('now', '-24 hours')
                     GROUP BY event_type
                     ORDER BY count DESC
                 `,
@@ -126,7 +153,7 @@ class AnalyticsController {
                         COUNT(CASE WHEN event_type = 'search' THEN 1 END) as total_searches,
                         COUNT(DISTINCT session_id) as unique_sessions
                     FROM analytics_events
-                    WHERE created_at >= NOW() - INTERVAL '7 days'
+                    WHERE created_at >= datetime('now', '-7 days')
                 `
             };
 
@@ -219,11 +246,11 @@ class AnalyticsController {
         try {
             const { period = '7d' } = req.query;
 
-            let timeFilter = "WHERE created_at >= NOW() - INTERVAL '7 days'";
+            let timeFilter = "WHERE created_at >= datetime('now', '-7 days')";
             if (period === '30d') {
-                timeFilter = "WHERE created_at >= NOW() - INTERVAL '30 days'";
+                timeFilter = "WHERE created_at >= datetime('now', '-30 days')";
             } else if (period === '24h') {
-                timeFilter = "WHERE created_at >= NOW() - INTERVAL '24 hours'";
+                timeFilter = "WHERE created_at >= datetime('now', '-24 hours')";
             }
 
             const searchStatsQuery = `
