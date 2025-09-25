@@ -776,6 +776,8 @@ class AdminPanel {
                 this.showSuccess(this.currentEditProductId ? 'Producto actualizado exitosamente' : 'Producto creado exitosamente');
                 this.hideProductModal();
                 this.loadProducts();
+                // Clear products cache to force refresh in main store
+                this.clearProductsCache();
             } else {
                 this.showError(data.error || 'Error al guardar producto');
             }
@@ -843,6 +845,8 @@ class AdminPanel {
             if (response.ok) {
                 this.showSuccess('Producto eliminado exitosamente');
                 this.loadProducts();
+                // Clear products cache to force refresh in main store
+                this.clearProductsCache();
             } else {
                 this.showError(data.error || 'Error al eliminar producto');
             }
@@ -904,6 +908,17 @@ class AdminPanel {
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
+    }
+
+    // Clear products cache from localStorage to force refresh in main store
+    clearProductsCache() {
+        try {
+            localStorage.removeItem('products-cache');
+            localStorage.removeItem('products-cache-time');
+            console.log('Products cache cleared');
+        } catch (error) {
+            console.warn('Could not clear products cache:', error);
+        }
     }
 }
 
