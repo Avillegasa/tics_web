@@ -85,6 +85,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Trigger to auto-update metrics
+DROP TRIGGER IF EXISTS analytics_events_trigger ON analytics_events;
 CREATE TRIGGER analytics_events_trigger
     AFTER INSERT ON analytics_events
     FOR EACH ROW
@@ -112,6 +113,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Trigger for search analytics
+DROP TRIGGER IF EXISTS search_analytics_trigger ON analytics_events;
 CREATE TRIGGER search_analytics_trigger
     AFTER INSERT ON analytics_events
     FOR EACH ROW
